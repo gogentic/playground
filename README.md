@@ -1,58 +1,56 @@
-# Verlet 3D Physics Engine
+# Protobyte Studio
 
-A real-time 3D physics simulation engine built with React, TypeScript, and Three.js, featuring Verlet integration for particle-based physics with an advanced edit mode for interactive particle manipulation.
+A powerful 3D physics simulation studio built with React, TypeScript, and Three.js. Features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
 
-![Verlet 3D Engine](https://img.shields.io/badge/Physics-Verlet%20Integration-blue) ![React](https://img.shields.io/badge/React-18.x-61dafb) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6) ![Three.js](https://img.shields.io/badge/Three.js-R3F-orange)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-19.1-61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6)
+![Three.js](https://img.shields.io/badge/Three.js-0.179-orange)
 
-## ✨ Features
+## 🌟 Features
 
-### 🎯 Core Physics Engine
-- **Verlet Integration**: Stable, energy-conserving particle physics
-- **Real-time Simulation**: 60 FPS physics with configurable timestep
-- **Constraint System**: Distance constraints for ropes, cloth, and structures
-- **Collision Detection**: Spatial hash optimization for performance
-- **Ground Collision**: Configurable ground plane with realistic bouncing
+### Physics Engine
+- **Verlet Integration**: Stable, energy-conserving particle physics simulation
+- **Real-time Performance**: Optimized for 60 FPS with configurable timestep
+- **Spatial Hashing**: Efficient collision detection for large particle systems
+- **Constraint System**: Distance-based constraints for creating complex structures
+- **Ground Collision**: Realistic bounce and friction physics with adjustable parameters
+- **Environmental Controls**: Adjustable gravity, time scaling, damping, and ground properties
 
-### 🎮 Interactive Edit Mode
-- **Live Editing**: Pause physics and manipulate particles in real-time
-- **Drag & Drop**: Intuitive 3D particle positioning with mouse
-- **Multiple Selection**: Shift+click to select multiple particles
-- **Group Operations**: Drag multiple particles together maintaining relative positions
-- **Visual Feedback**: Color-coded selection states and edit mode indicators
+### Interactive Editing
+- **Edit Mode**: Pause physics and manipulate particles in 3D space
+- **Multi-Selection**: Select and manipulate multiple particles simultaneously (Shift+Click)
+- **Drag & Drop**: Intuitive particle positioning with real-time visual feedback
+- **Constraint Creation**: Visual mode for connecting particles with constraints
+- **Color-Coded States**: Visual feedback for selection, dragging, and constraint creation
 
-### 🔄 Advanced Undo/Redo System
-- **Full History Tracking**: Complete state snapshots for all operations
-- **Smart Action Grouping**: Drag operations create single undo actions
-- **Keyboard Shortcuts**: Standard Ctrl+Z/Ctrl+Y shortcuts
-- **UI Integration**: Visual undo/redo buttons with state feedback
-- **Memory Management**: Configurable history limit (50 steps)
-
-### 🏗️ Primitive Creation Tools
+### Creation Tools
 - **Particles**: Individual physics objects with customizable properties
-- **Ropes**: Flexible constraint chains
-- **Cloth**: 2D constraint grids with realistic fabric behavior
-- **Boxes**: Rigid constraint structures
-- **Composites**: Complex multi-particle systems
+- **Ropes**: Flexible constraint chains with adjustable segment count
+- **Cloth**: 2D grid structures with configurable resolution (up to 50x50 nodes)
+- **Boxes**: 3D rigid structures
+- **Composites**: Complex multi-particle systems with internal constraints
 
-### 🎨 Advanced Rendering
-- **Real-time 3D**: Hardware-accelerated WebGL rendering
-- **Dynamic Lighting**: Directional and ambient lighting with shadows
-- **Material System**: Physically-based rendering with metalness/roughness
-- **Visual States**: Color-coded feedback for selection, dragging, and constraints
-- **Grid System**: Optional reference grid with fade distance
+### Advanced Features
+- **Undo/Redo System**: Full history tracking with keyboard shortcuts (Ctrl+Z/Y)
+- **Property Panels**: Real-time editing of particle mass, radius, damping, color, and position
+- **Environmental Panel**: Control gravity, time scale, ground properties, and physics parameters
+- **Stats Panel**: Monitor particle count, constraint count, and simulation time
+- **Bounding Box Visualization**: Optional display of composite object boundaries
+- **Object Properties**: Detailed property editing for selected particles and composites
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn
+- Node.js 18.0 or higher
+- npm or yarn package manager
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd verlet-3d-engine
+git clone git@github.com:irajgreenberg/protobyte-studio.git
+cd protobyte-studio
 
 # Install dependencies
 npm install
@@ -61,132 +59,225 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to view the application.
+The application will be available at [http://localhost:5173](http://localhost:5173)
 
 ### Building for Production
 
 ```bash
+# Create optimized production build
 npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Development Commands
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run lint     # Run ESLint
+npm run preview  # Preview production build
 ```
 
 ## 🎮 Controls & Usage
 
-### Basic Controls
-- **Mouse**: Orbit camera around the scene
-- **Scroll**: Zoom in/out
-- **Right-click + Drag**: Pan camera
+### Camera Controls
+| Action | Control |
+|--------|---------|
+| Orbit | Left Mouse Drag |
+| Zoom | Mouse Scroll |
+| Pan | Right Mouse Drag |
 
-### Edit Mode Controls
-| Action | Shortcut | Description |
-|--------|----------|-------------|
-| Toggle Edit Mode | `E` | Enter/exit edit mode |
-| Select Particle | `Click` | Select single particle |
-| Multi-Select | `Shift + Click` | Add/remove particles from selection |
-| Select All | `Ctrl + A` | Select all particles |
-| Clear Selection | `Escape` | Clear current selection |
-| Delete Selected | `Delete` / `Backspace` | Remove selected particles |
-| Undo | `Ctrl + Z` | Undo last action |
-| Redo | `Ctrl + Y` / `Ctrl + Shift + Z` | Redo last undone action |
+### Edit Mode
+| Action | Shortcut |
+|--------|----------|
+| Toggle Edit Mode | `E` |
+| Select Particle | Click |
+| Multi-Select | `Shift + Click` |
+| Select All | `Ctrl/Cmd + A` |
+| Clear Selection | `Escape` |
+| Delete Selected | `Delete` or `Backspace` |
+| Undo | `Ctrl/Cmd + Z` |
+| Redo | `Ctrl/Cmd + Y` or `Ctrl/Cmd + Shift + Z` |
 
-### Particle Manipulation
-1. **Enter Edit Mode**: Press `E` or click "Enter Edit Mode"
-2. **Select Particles**: Click individual particles or use `Shift+Click` for multiple
-3. **Drag to Move**: Click and drag any selected particle to move the group
-4. **Exit Edit Mode**: Press `E` again to resume physics simulation
+### Panel Controls
+- **Control Panel**: Play/pause simulation, reset, single step, toggle edit mode
+- **Toolbar**: Add particles, ropes, cloth (with custom resolution), and boxes
+- **Object Properties**: Edit selected particle/composite properties
+- **Environmental Panel**: Adjust physics parameters in real-time
+- **Stats Panel**: Monitor simulation performance
 
-### Creating Objects
-Use the toolbar on the left to add different physics primitives:
-- **Particle**: Single physics object
-- **Rope**: Flexible constraint chain
-- **Cloth**: 2D fabric simulation
-- **Box**: Rigid structure
+## 🏗️ Architecture
 
-## 🔧 Technical Architecture
+### Project Structure
+```
+protobyte-studio/
+├── src/
+│   ├── core/
+│   │   ├── physics/         # Physics engine implementation
+│   │   │   ├── Vector3.ts   # 3D vector mathematics
+│   │   │   └── VerletEngine.ts # Main physics simulation
+│   │   ├── primitives/      # Physics objects
+│   │   │   ├── Particle.ts  # Individual particles
+│   │   │   ├── Constraint.ts # Distance constraints
+│   │   │   └── Composite.ts # Complex structures
+│   │   └── systems/
+│   │       └── SpatialHash.ts # Collision optimization
+│   ├── components/
+│   │   ├── ui/             # User interface panels
+│   │   │   ├── ControlPanel.tsx
+│   │   │   ├── Toolbar.tsx
+│   │   │   ├── ObjectPropertiesPanel.tsx
+│   │   │   ├── EnvironmentalPanel.tsx
+│   │   │   ├── ParticlePropertyPanel.tsx
+│   │   │   └── StatsPanel.tsx
+│   │   └── viewport/       # 3D rendering components
+│   │       ├── Viewport.tsx
+│   │       ├── Scene.tsx
+│   │       ├── ParticleRenderer.tsx
+│   │       ├── ConstraintRenderer.tsx
+│   │       ├── Ground.tsx
+│   │       └── CompositeBoundingBox.tsx
+│   ├── stores/
+│   │   └── useEngineStore.ts # Zustand state management
+│   ├── types/              # TypeScript type definitions
+│   ├── utils/              # Utility functions
+│   └── App.tsx             # Main application component
+```
 
-### Core Components
+### Core Technologies
+- **React 19**: Modern React with concurrent features
+- **TypeScript 5.8**: Full type safety and IntelliSense support
+- **Three.js + React Three Fiber**: Hardware-accelerated 3D graphics
+- **Zustand**: Lightweight, performant state management
+- **Vite**: Lightning-fast development and optimized builds
 
-#### Physics Engine (`src/core/physics/`)
-- `VerletEngine.ts`: Main physics simulation loop
-- `Vector3.ts`: Optimized 3D vector mathematics
-- `SpatialHash.ts`: Collision detection optimization
+### Physics Engine Details
 
-#### Primitives (`src/core/primitives/`)
-- `Particle.ts`: Individual physics objects
-- `Constraint.ts`: Distance constraints between particles
-- `Composite.ts`: Complex multi-particle systems
+#### Verlet Integration
+The engine uses Verlet integration for numerical stability:
+- Position-based dynamics
+- Implicit velocity calculation
+- Energy conservation
+- Configurable timestep and iterations
 
-#### React Components (`src/components/`)
-- `Viewport.tsx`: 3D scene container with Three.js integration
-- `ParticleRenderer.tsx`: Individual particle rendering and interaction
-- `ControlPanel.tsx`: Physics settings and simulation controls
-- `Toolbar.tsx`: Primitive creation tools
+#### Collision System
+- Spatial hash grid for broad-phase detection
+- Sphere-sphere collision with proper response
+- Ground plane collision with bounce and friction
+- Configurable world boundaries
 
-#### State Management (`src/stores/`)
-- `useEngineStore.ts`: Zustand store for global state management
-  - Physics engine state
-  - Edit mode and selection state
-  - Undo/redo system
-  - UI preferences
+#### Constraint Solver
+- Distance constraints with adjustable stiffness
+- Iterative relaxation for stability
+- Breaking threshold for realistic behavior
+- Support for complex constraint networks
 
-### Key Technologies
-- **React 18**: Component framework with concurrent features
-- **TypeScript**: Type-safe development
-- **Three.js**: 3D graphics and WebGL rendering
-- **React Three Fiber**: React renderer for Three.js
-- **React Three Drei**: Useful helpers and controls
-- **Zustand**: Lightweight state management
-- **Vite**: Fast development and build tooling
+## 🎨 Customization
 
-## 🎯 Physics Configuration
+### Physics Parameters
+Configure physics behavior through the Environmental Panel:
+- **Gravity**: 3D vector (default: [0, -9.81, 0])
+- **Time Scale**: Simulation speed multiplier (0.1 - 2.0)
+- **Ground Bounce**: Restitution coefficient (0.0 - 1.0)
+- **Ground Friction**: Horizontal damping (0.0 - 1.0)
+- **Constraint Iterations**: Solver accuracy (1 - 10)
 
-The engine supports real-time configuration of physics parameters:
+### Visual Customization
+- Particle colors with HSL color picker
+- Adjustable particle radius (0.1 - 5.0)
+- Grid visibility toggle
+- Ground plane visibility
+- Bounding box display for composites
 
-- **Gravity**: 3D gravity vector (default: `[0, -9.81, 0]`)
-- **Time Step**: Simulation timestep (default: `0.016` for 60 FPS)
-- **Iterations**: Constraint solver iterations (default: `2`)
-- **Damping**: Global energy damping (default: `0.98`)
-- **Bounds**: World boundaries for particle containment
+## 🔧 API Reference
 
-## 🎨 Visual States
+### Creating Custom Particles
+```typescript
+import { Particle } from './core/primitives/Particle';
+import { Vector3 } from './core/physics/Vector3';
 
-### Particle Colors
-- **Default**: Original particle color
-- **Selected**: Red glow (single selection)
-- **Multi-Selected**: Orange glow (multiple selection)
-- **Being Dragged**: Cyan glow (active drag)
-- **Constraint Start**: Green glow (constraint creation)
-- **Edit Mode**: Subtle white glow (draggable indicator)
+const particle = new Particle({
+  position: new Vector3(0, 10, 0),
+  mass: 1.0,
+  radius: 0.5,
+  damping: 0.99,
+  fixed: false,
+  color: '#ff0000'
+});
+```
 
-### UI Indicators
-- **Edit Mode Overlay**: Shows current mode and selection count
-- **Selection Counter**: Displays number of selected particles
-- **Context Hints**: Dynamic keyboard shortcut reminders
+### Creating Composite Structures
+```typescript
+import { CompositeFactory } from './core/primitives/Composite';
 
-## 🔮 Future Enhancements
+// Create a rope
+const rope = CompositeFactory.createRope(
+  startPosition,  // Vector3
+  endPosition,    // Vector3
+  segments,       // number
+  stiffness,      // 0-1
+  damping         // 0-1
+);
 
-- **Advanced Constraints**: Angular constraints, springs with different behaviors
-- **Collision Shapes**: Sphere, box, and custom collision geometries  
-- **Force Fields**: Gravity wells, wind, and magnetic forces
-- **Performance Optimization**: Web Workers for physics calculations
-- **Export/Import**: Save and load simulation states
-- **Animation Recording**: Capture and replay physics simulations
-- **VR Support**: Immersive 3D physics manipulation
+// Create cloth
+const cloth = CompositeFactory.createCloth(
+  width,          // number
+  height,         // number
+  segmentsX,      // number
+  segmentsY,      // number
+  position,       // Vector3
+  stiffness,      // 0-1
+  damping         // 0-1
+);
+```
+
+## 🚧 Roadmap
+
+### Planned Features
+- [ ] Save/Load simulation states
+- [ ] Export simulation data (JSON, CSV)
+- [ ] Additional constraint types (springs, hinges, motors)
+- [ ] Custom collision shapes (boxes, capsules, meshes)
+- [ ] Force fields (attractors, repulsors, vortices)
+- [ ] Fluid simulation
+- [ ] WebWorker physics for better performance
+- [ ] VR/AR support for immersive manipulation
+- [ ] Recording and playback system
+- [ ] Scripting API for procedural generation
+
+### Performance Improvements
+- [ ] GPU-accelerated physics with WebGPU
+- [ ] Instanced rendering for large particle counts
+- [ ] Level-of-detail (LOD) system
+- [ ] Octree spatial partitioning option
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+Copyright (c) 2025 Ira Greenberg
+
 ## 🙏 Acknowledgments
 
-- **Verlet Integration**: Thomas Jakobsen's advanced character physics
-- **Three.js Community**: Excellent 3D graphics foundation
-- **React Three Fiber**: Seamless React/Three.js integration
-- **Physics Simulation Research**: Real-time physics simulation techniques
+- **Thomas Jakobsen** for the Verlet integration physics paper
+- **Three.js Community** for the excellent 3D graphics library
+- **React Three Fiber Team** for the React renderer for Three.js
+- **Zustand** for the elegant state management solution
+
+## 📧 Contact
+
+Ira Greenberg - [GitHub](https://github.com/irajgreenberg)
+
+Project Link: [https://github.com/irajgreenberg/protobyte-studio](https://github.com/irajgreenberg/protobyte-studio)
