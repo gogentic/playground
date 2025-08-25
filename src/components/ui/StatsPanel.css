@@ -1,0 +1,67 @@
+.stats-panel {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(42, 42, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(68, 68, 68, 0.5);
+  border-radius: 8px;
+  color: #fff;
+  font-family: monospace;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  min-width: 180px;
+  transition: all 0.3s ease;
+}
+
+.stats-panel.collapsed {
+  min-width: auto;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: #e0e0e0;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  margin: -12px -16px 10px -16px;
+  border-bottom: 1px solid rgba(68, 68, 68, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stats-panel .collapse-icon {
+  font-size: 10px;
+  color: #b0b0b0;
+  transition: transform 0.3s ease;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.stat-label {
+  color: #b0b0b0;
+  font-weight: 400;
+}
+
+.stat-value {
+  color: #4dabf7;
+  font-weight: 600;
+  font-size: 13px;
+}
