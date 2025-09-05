@@ -163,7 +163,7 @@ export function EnvironmentalPanel() {
   
   // Dynamic positioning based on Object Properties panel visibility
   const panelStyle = {
-    left: showObjectProperties ? '500px' : '220px'  // 220px for toolbar width, 500px for toolbar + properties panel
+    left: showObjectProperties ? '480px' : '200px'  // 200px for toolbar width, 480px for toolbar + properties panel (200 + 280)
   };
   
   return (

@@ -1,0 +1,271 @@
+.top-menu-bar {
+  position: fixed;
+  top: 0;
+  left: 180px;
+  right: 0;
+  height: 24px;
+  background: #2a2a2a;
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  user-select: none;
+}
+
+.menu-items {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.menu-item {
+  position: relative;
+  height: 100%;
+}
+
+.menu-button {
+  height: 100%;
+  padding: 0 10px;
+  background: transparent;
+  border: none;
+  color: #d0d0d0;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.menu-button:hover {
+  background: #3a3a3a;
+}
+
+.menu-button.active {
+  background: #404040;
+  color: #fff;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: #2a2a2a;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+.menu-dropdown button {
+  width: 100%;
+  padding: 4px 12px;
+  background: transparent;
+  border: none;
+  color: #d0d0d0;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.menu-dropdown button:hover:not(:disabled) {
+  background: #3a3a3a;
+  color: #fff;
+}
+
+.menu-dropdown button:disabled {
+  color: #606060;
+  cursor: default;
+}
+
+.menu-separator {
+  height: 1px;
+  background: #3a3a3a;
+  margin: 2px 0;
+}
+
+.shortcut {
+  color: #808080;
+  font-size: 10px;
+  margin-left: 20px;
+}
+
+.simulation-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+  gap: 4px;
+}
+
+.control-btn {
+  padding: 2px 8px;
+  background: #3a3a3a;
+  border: 1px solid #404040;
+  color: #d0d0d0;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: #4a4a4a;
+  border-color: #5a5a5a;
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.control-btn.primary {
+  background: #4dabf7;
+  border-color: #339af0;
+  color: white;
+}
+
+.control-btn.primary:hover:not(:disabled) {
+  background: #339af0;
+  border-color: #2b7ec3;
+}
+
+.control-btn.edit-mode {
+  background: #ff6b6b;
+  border-color: #ff5252;
+  color: white;
+  font-weight: 600;
+  min-width: 40px;
+}
+
+.control-btn.edit-mode:hover {
+  background: #ff5252;
+  border-color: #ff1744;
+}
+
+.control-separator {
+  width: 1px;
+  height: 16px;
+  background: #404040;
+  margin: 0 4px;
+}
+
+/* Auth Section - Top Right */
+.auth-section {
+  margin-left: auto;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.sign-in-button {
+  padding: 4px 12px;
+  background: #4dabf7;
+  border: 1px solid #339af0;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sign-in-button:hover {
+  background: #339af0;
+  border-color: #2b7ec3;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #d0d0d0;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.user-button:hover {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+.user-avatar {
+  width: 20px;
+  height: 20px;
+  background: #4dabf7;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.user-email {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  font-size: 8px;
+  color: #808080;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background: #2a2a2a;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  margin-top: 2px;
+}
+
+.user-info {
+  padding: 10px 12px;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.user-email-full {
+  color: #a0a0a0;
+  font-size: 11px;
+  word-wrap: break-word;
+}
+
+.user-dropdown button {
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: #d0d0d0;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.user-dropdown button:hover {
+  background: #3a3a3a;
+  color: #fff;
+}

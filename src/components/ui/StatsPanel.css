@@ -1,18 +1,20 @@
 .stats-panel {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(42, 42, 42, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(68, 68, 68, 0.5);
-  border-radius: 8px;
-  color: #fff;
+  bottom: 0;
+  left: 220px;
+  background: #2d2d2d;
+  border: 1px solid #1a1a1a;
+  border-radius: 0;
+  color: #d0d0d0;
   font-family: monospace;
-  font-size: 12px;
+  font-size: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 100;
-  min-width: 180px;
+  min-width: 160px;
   transition: all 0.3s ease;
+  border-top: 1px solid #1a1a1a;
+  border-right: 1px solid #1a1a1a;
+  padding: 6px;
 }
 
 .stats-panel.collapsed {

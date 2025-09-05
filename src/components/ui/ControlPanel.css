@@ -1,18 +1,18 @@
 .control-panel {
   position: fixed;
-  right: 20px;
-  top: 20px;
-  width: 300px;
-  max-height: calc(100vh - 40px);
-  background: rgba(42, 42, 42, 0.95);
-  backdrop-filter: blur(10px);
-  color: #fff;
+  right: 0;
+  top: 24px;
+  width: 240px;
+  height: calc(100vh - 24px);
+  background: #2d2d2d;
+  color: #d0d0d0;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
+  border-radius: 0;
   transition: width 0.3s ease;
   z-index: 100;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid #1a1a1a;
+  font-size: 11px;
 }
 
 .control-panel.collapsed {
@@ -23,20 +23,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 6px 10px;
   cursor: pointer;
   user-select: none;
-  background: rgba(36, 36, 36, 0.8);
-  margin: -20px -20px 20px -20px;
-  border-bottom: 1px solid rgba(68, 68, 68, 0.5);
-  border-radius: 12px 12px 0 0;
+  background: #242424;
+  margin: 0;
+  border-bottom: 1px solid #1a1a1a;
+  border-radius: 0;
 }
 
 .control-panel .panel-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 11px;
   font-weight: 600;
   color: #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .control-panel .collapse-icon {
@@ -46,20 +48,22 @@
 }
 
 .control-panel .panel-content {
-  padding: 0 20px 20px 20px;
+  padding: 8px;
 }
 
 .panel-section {
-  margin-bottom: 30px;
+  margin-bottom: 12px;
 }
 
 .panel-section h3 {
-  margin: 0 0 15px 0;
-  font-size: 16px;
+  margin: 0 0 6px 0;
+  font-size: 10px;
   font-weight: 600;
-  color: #e0e0e0;
-  border-bottom: 1px solid #444;
-  padding-bottom: 8px;
+  color: #b0b0b0;
+  border-bottom: 1px solid #3a3a3a;
+  padding-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .button-group {
@@ -69,12 +73,12 @@
 }
 
 .btn {
-  padding: 8px 16px;
+  padding: 4px 8px;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 0;
+  font-size: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.1s;
   font-weight: 500;
 }
 
@@ -120,24 +124,26 @@
 }
 
 .input-group {
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 }
 
 .input-group label {
   display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
-  color: #b0b0b0;
+  margin-bottom: 2px;
+  font-size: 10px;
+  color: #808080;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .input-group input[type="number"] {
   width: 100%;
-  padding: 6px 10px;
+  padding: 3px 6px;
   background: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
+  border: 1px solid #3a3a3a;
+  border-radius: 0;
+  color: #d0d0d0;
+  font-size: 11px;
 }
 
 .input-group input[type="number"]:focus {
@@ -190,7 +196,7 @@
   margin-top: 10px;
   padding: 10px;
   background: #1a1a1a;
-  border-radius: 4px;
+  border-radius: 0;
   border-left: 3px solid #4dabf7;
 }
 
@@ -216,7 +222,7 @@
   color: white;
   font-size: 11px;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }

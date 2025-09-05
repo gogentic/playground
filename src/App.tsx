@@ -1,14 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Viewport } from './components/viewport/Viewport'
-import { ControlPanel } from './components/ui/ControlPanel'
-import { Toolbar } from './components/ui/Toolbar'
-import { StatsPanel } from './components/ui/StatsPanel'
-import { ObjectPropertiesPanel } from './components/ui/ObjectPropertiesPanel'
-import { EnvironmentalPanel } from './components/ui/EnvironmentalPanel'
+import { ToolbarIntegrated } from './components/ui/ToolbarIntegrated'
+import { TopMenuBar } from './components/ui/TopMenuBar'
+import { SceneManager } from './components/scenes/SceneManager'
 import { useEngineStore } from './stores/useEngineStore'
 import './App.css'
 
 function App() {
+  const [showSceneManager, setShowSceneManager] = useState(false);
+  
   const toggleEditMode = useEngineStore((state) => state.toggleEditMode);
   const isEditMode = useEngineStore((state) => state.isEditMode);
   const selectAllParticles = useEngineStore((state) => state.selectAllParticles);
@@ -32,6 +32,12 @@ function App() {
       if (event.key.toLowerCase() === 'e' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         event.preventDefault();
         toggleEditMode();
+      }
+      
+      // Save/Load with Ctrl+S
+      if (event.key.toLowerCase() === 's' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        setShowSceneManager(true);
       }
       
       // Undo/Redo shortcuts (work in both modes)
@@ -87,35 +93,20 @@ function App() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [toggleEditMode, isEditMode, selectAllParticles, deleteSelectedParticles, clearSelection, selectedParticleIds, undo, redo, canUndo, canRedo]);
+  }, [toggleEditMode, isEditMode, selectAllParticles, deleteSelectedParticles, clearSelection, selectedParticleIds, undo, redo, canUndo, canRedo, setShowSceneManager]);
 
   return (
-    <div className="app">
-      <Toolbar />
-      <ObjectPropertiesPanel />
-      <EnvironmentalPanel />
-      <Viewport />
-      <ControlPanel />
-      <StatsPanel />
-      
-      {/* Edit mode indicator overlay */}
-      {isEditMode && (
-        <div className="edit-mode-overlay">
-          <div className="edit-mode-indicator">
-            <span>✏️ EDIT MODE</span>
-            {selectedParticleIds.size > 0 && (
-              <span className="selection-count">{selectedParticleIds.size} selected</span>
-            )}
-            <span className="shortcut-hint">
-              {selectedParticleIds.size > 0 
-                ? 'Del to delete • Esc to clear • E to exit'
-                : 'Shift+click to multi-select • Ctrl+A for all • E to exit'
-              }
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+    <>
+      <div className="app">
+        <TopMenuBar />
+        <ToolbarIntegrated />
+        <Viewport />
+      </div>
+      <SceneManager 
+        isOpen={showSceneManager}
+        onClose={() => setShowSceneManager(false)}
+      />
+    </>
   )
 }
 

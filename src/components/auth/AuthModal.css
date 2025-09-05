@@ -1,0 +1,288 @@
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.auth-modal {
+  background: #2a2a2a;
+  border: 1px solid #1a1a1a;
+  width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.auth-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #242424;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.auth-modal-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.auth-modal-close {
+  background: transparent;
+  border: none;
+  color: #808080;
+  font-size: 24px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.auth-modal-close:hover {
+  color: #d0d0d0;
+}
+
+.auth-modal-content {
+  padding: 20px;
+}
+
+/* Override Supabase Auth UI styles */
+.auth-container {
+  color: #d0d0d0 !important;
+}
+
+.auth-container button {
+  background: #4dabf7 !important;
+  border: 1px solid #339af0 !important;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.2s !important;
+}
+
+.auth-container button:hover {
+  background: #339af0 !important;
+  border-color: #2b7ec3 !important;
+}
+
+.auth-container input {
+  background: #1a1a1a !important;
+  border: 1px solid #3a3a3a !important;
+  color: #d0d0d0 !important;
+  font-size: 12px !important;
+}
+
+.auth-container input:focus {
+  border-color: #4dabf7 !important;
+  outline: none !important;
+}
+
+.auth-container label {
+  color: #808080 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  font-weight: 600 !important;
+}
+
+.auth-container .auth-message {
+  font-size: 11px !important;
+  color: #a0a0a0 !important;
+}
+
+.auth-container a {
+  color: #4dabf7 !important;
+  text-decoration: none !important;
+  font-size: 11px !important;
+}
+
+.auth-container a:hover {
+  color: #339af0 !important;
+}
+
+.whitelist-notice {
+  background: rgba(77, 171, 247, 0.1);
+  border: 1px solid #4dabf7;
+  color: #4dabf7;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.auth-error {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.auth-success {
+  background: rgba(77, 171, 247, 0.1);
+  border: 1px solid #4dabf7;
+  color: #4dabf7;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Custom Auth Form */
+.custom-auth-form {
+  padding: 10px 0;
+}
+
+.custom-auth-form .form-group {
+  margin-bottom: 15px;
+}
+
+.custom-auth-form label {
+  display: block;
+  margin-bottom: 6px;
+  color: #808080;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.custom-auth-form input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  color: #d0d0d0;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.custom-auth-form input:focus {
+  outline: none;
+  border-color: #4dabf7;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 10px;
+  background: #4dabf7;
+  border: 1px solid #339af0;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: #339af0;
+  border-color: #2b7ec3;
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-toggle-btn {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: #4dabf7;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.auth-toggle-btn:hover:not(:disabled) {
+  color: #339af0;
+  text-decoration: underline;
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.auth-divider span {
+  background: #2a2a2a;
+  padding: 0 10px;
+  color: #606060;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #3a3a3a;
+}
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.oauth-btn {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #3a3a3a;
+  background: #333;
+  color: #d0d0d0;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.oauth-btn:hover:not(:disabled) {
+  background: #404040;
+  border-color: #4a4a4a;
+}
+
+.oauth-btn.google:hover:not(:disabled) {
+  border-color: #4285f4;
+}
+
+.oauth-btn.github:hover:not(:disabled) {
+  border-color: #333;
+}
+
+.oauth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

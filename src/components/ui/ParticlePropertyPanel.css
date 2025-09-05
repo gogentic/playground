@@ -4,7 +4,7 @@
   background: rgba(42, 42, 42, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(77, 171, 247, 0.5);
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   color: #fff;
   z-index: 1000;
@@ -24,7 +24,7 @@
   padding: 16px 20px;
   border-bottom: 1px solid #444;
   background: #333;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
   cursor: grab;
   transition: background-color 0.2s;
 }

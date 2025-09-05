@@ -677,3 +677,8 @@ export const useEngineStore = create<EngineState>((set, get) => ({
     }
   },
 }));
+
+// Expose the store globally so auth store can access it
+if (typeof window !== 'undefined') {
+  (window as any).engineStore = useEngineStore;
+}

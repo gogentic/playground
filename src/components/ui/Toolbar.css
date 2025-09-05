@@ -1,19 +1,19 @@
 .toolbar {
   position: fixed;
-  left: 20px;
-  top: 20px;
-  width: 200px;
-  max-height: calc(100vh - 40px);
-  background: rgba(42, 42, 42, 0.95);
-  backdrop-filter: blur(10px);
-  color: #fff;
+  left: 0;
+  top: 24px;
+  width: 180px;
+  height: calc(100vh - 24px);
+  background: #2d2d2d;
+  color: #d0d0d0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
+  border-radius: 0;
   transition: width 0.3s ease;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 100;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid #1a1a1a;
+  font-size: 11px;
 }
 
 .toolbar.collapsed {
@@ -24,19 +24,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 6px 10px;
   cursor: pointer;
   user-select: none;
-  background: rgba(36, 36, 36, 0.8);
-  border-bottom: 1px solid rgba(68, 68, 68, 0.5);
-  border-radius: 12px 12px 0 0;
+  background: #242424;
+  border-bottom: 1px solid #1a1a1a;
+  border-radius: 0;
 }
 
 .toolbar .panel-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 11px;
   font-weight: 600;
   color: #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .toolbar .collapse-icon {
@@ -46,7 +48,7 @@
 }
 
 .toolbar .panel-content {
-  padding: 20px;
+  padding: 8px;
 }
 
 .toolbar-btn-with-controls {
@@ -55,11 +57,11 @@
 
 .cloth-controls {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  padding: 6px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border: 1px solid #3a3a3a;
 }
 
 .cloth-controls .control-row {
@@ -74,18 +76,18 @@
 }
 
 .cloth-controls label {
-  font-size: 12px;
-  color: #b0b0b0;
-  margin-right: 10px;
+  font-size: 10px;
+  color: #808080;
+  margin-right: 6px;
 }
 
 .cloth-controls input[type="number"] {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  color: #fff;
-  padding: 4px 8px;
-  font-size: 12px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 0;
+  color: #d0d0d0;
+  padding: 2px 4px;
+  font-size: 10px;
 }
 
 .cloth-controls input[type="number"]:focus {
@@ -104,21 +106,21 @@
 .toolbar-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
 }
 
 .toolbar-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+  gap: 6px;
+  padding: 6px 8px;
   background: #3a3a3a;
-  border: 1px solid #444;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 14px;
+  border: 1px solid #404040;
+  border-radius: 0;
+  color: #d0d0d0;
+  font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.1s;
   text-align: left;
 }
 
@@ -133,8 +135,8 @@
 }
 
 .toolbar-btn .icon {
-  font-size: 20px;
-  width: 24px;
+  font-size: 14px;
+  width: 16px;
   text-align: center;
 }
 
@@ -155,7 +157,7 @@
   padding: 12px 16px;
   background: #2a2a2a;
   border: 1px solid #4dabf7;
-  border-radius: 6px;
+  border-radius: 0;
   color: #e0e0e0;
   font-size: 12px;
   line-height: 1.4;
