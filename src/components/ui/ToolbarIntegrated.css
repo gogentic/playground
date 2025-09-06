@@ -17,7 +17,36 @@
 }
 
 .toolbar-integrated.collapsed {
-  width: auto;
+  width: 24px;
+}
+
+.toolbar-collapse-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toolbar-collapse-btn:hover {
+  opacity: 1;
+}
+
+.toolbar-collapse-btn .collapse-icon {
+  font-size: 10px;
+  color: #808080;
+}
+
+.toolbar-integrated.collapsed .toolbar-collapse-btn {
+  right: 4px;
 }
 
 .toolbar-top-header {

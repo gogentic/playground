@@ -3,13 +3,18 @@ import { Viewport } from './components/viewport/Viewport'
 import { ToolbarIntegrated } from './components/ui/ToolbarIntegrated'
 import { TopMenuBar } from './components/ui/TopMenuBar'
 import { SceneManager } from './components/scenes/SceneManager'
+import { AuthModal } from './components/auth/AuthModal'
 import { useEngineStore } from './stores/useEngineStore'
-import logoSvg from './assets/logo.svg'
+import { useAuthStore } from './stores/useAuthStore'
 import logoPng from './assets/logo.png'
 import './App.css'
 
 function App() {
   const [showSceneManager, setShowSceneManager] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
   
   const toggleEditMode = useEngineStore((state) => state.toggleEditMode);
   const isEditMode = useEngineStore((state) => state.isEditMode);
@@ -96,6 +101,39 @@ function App() {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [toggleEditMode, isEditMode, selectAllParticles, deleteSelectedParticles, clearSelection, selectedParticleIds, undo, redo, canUndo, canRedo, setShowSceneManager]);
+
+  // Show auth modal if user is not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      setShowAuthModal(true);
+    } else {
+      setShowAuthModal(false);
+    }
+  }, [user, loading]);
+
+  // Don't render app until auth is checked
+  if (loading) {
+    return (
+      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'white' }}>Loading...</div>
+      </div>
+    );
+  }
+
+  // Require authentication
+  if (!user) {
+    return (
+      <>
+        <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: 'white', textAlign: 'center' }}>
+            <img src={logoPng} alt="Protobyte Logo" style={{ width: '200px', marginBottom: '20px' }} />
+            <h2>Please sign in to access Protobyte Studio</h2>
+          </div>
+        </div>
+        <AuthModal isOpen={showAuthModal} onClose={() => {}} />
+      </>
+    );
+  }
 
   return (
     <>

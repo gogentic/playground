@@ -715,7 +715,11 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   // Clear all and reset
   clearAll: () => {
     const { engine, dynamicsSystem } = get();
-    engine.clear();
+    // Clear all particles and constraints from engine
+    const particles = engine.getParticles();
+    particles.forEach(p => engine.removeParticle(p.id));
+    const constraints = engine.getConstraints();
+    constraints.forEach(c => engine.removeConstraint(c.id));
     dynamicsSystem.reset();
     set({ 
       composites: new Map(),

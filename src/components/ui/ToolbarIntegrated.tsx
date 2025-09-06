@@ -83,7 +83,7 @@ export function ToolbarIntegrated() {
     }
   }, [selectedParticleId, selectedParticleIds.size]);
 
-  const toggleSection = (section: string) => {
+  const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
@@ -243,9 +243,8 @@ export function ToolbarIntegrated() {
 
   return (
     <div className={`toolbar-integrated ${collapsed ? 'collapsed' : ''}`}>
-      <div className="toolbar-top-header" onClick={() => setCollapsed(!collapsed)}>
-        <span className="collapse-icon">{collapsed ? '▶' : '▼'}</span>
-        <span className="toolbar-title">TOOLS</span>
+      <div className="toolbar-collapse-btn" onClick={() => setCollapsed(!collapsed)}>
+        <span className="collapse-icon">{collapsed ? '▶' : '◀'}</span>
       </div>
       {!collapsed && (
       <div className="panel-content">
@@ -408,7 +407,7 @@ export function ToolbarIntegrated() {
                     <label>
                       <input 
                         type="checkbox" 
-                        checked={selectedParticles.every(p => p.fixed)}
+                        checked={selectedParticles.every(p => p && p.fixed)}
                         onChange={(e) => {
                           selectedParticles.forEach(p => {
                             if (p) p.fixed = e.target.checked;

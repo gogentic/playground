@@ -256,7 +256,7 @@
 
 .oauth-btn {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #3a3a3a;
   background: #333;
   color: #d0d0d0;
@@ -285,4 +285,10 @@
 .oauth-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.oauth-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
 }

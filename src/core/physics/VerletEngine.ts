@@ -25,7 +25,7 @@ export class VerletEngine {
   private particles: Map<string, Particle> = new Map();
   private constraints: Map<string, Constraint> = new Map();
   private spatialHash: SpatialHash;
-  private config: PhysicsConfig;
+  public config: PhysicsConfig;
   private isPaused: boolean = true; // Start paused, will be resumed when play is pressed
   private time: number = 0;
   private groundEnabled: boolean = true;
@@ -56,7 +56,7 @@ export class VerletEngine {
     // Initialize spatial hash for collision detection
     const bounds = this.config.bounds!;
     const cellSize = 2; // Adjust based on typical particle size
-    this.spatialHash = new SpatialHash(bounds.min, bounds.max, cellSize);
+    this.spatialHash = new SpatialHash(bounds.min as Vector3, bounds.max as Vector3, cellSize);
   }
 
   /**

@@ -1,8 +1,8 @@
-# CLAUDE.md - Protobyte Studio Development Guide
+# CLAUDE.md - Playground Development Guide
 
 ## Project Overview
 
-Protobyte Studio is a powerful 3D physics simulation studio built with React, TypeScript, and Three.js. It features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
+Playground is a powerful 3D physics simulation studio built with React, TypeScript, and Three.js. It features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
 
 ## Commands
 
@@ -41,7 +41,7 @@ git checkout -b feature/your-feature
 
 ### Project Structure
 ```
-protobyte-studio/
+playground/
 ├── src/
 │   ├── core/                    # Physics engine core
 │   │   ├── physics/             # Physics implementation

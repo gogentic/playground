@@ -13,7 +13,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="auth-modal-header">
-          <h2>Sign In to Protobyte Studio</h2>
+          <h2>Sign In to Playground</h2>
           <button className="auth-modal-close" onClick={onClose}>×</button>
         </div>
         <div className="auth-modal-content">

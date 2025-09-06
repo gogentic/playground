@@ -1,14 +1,14 @@
-# Supabase Setup Guide for Protobyte Studio
+# Supabase Setup Guide for Playground
 
 ## Overview
-This guide will help you set up Supabase for user authentication and scene storage in Protobyte Studio.
+This guide will help you set up Supabase for user authentication and scene storage in Playground.
 
 ## Step 1: Create a Supabase Project
 
 1. Go to [https://supabase.com](https://supabase.com) and sign up/login
 2. Click "New Project"
 3. Fill in the project details:
-   - Project name: `protobyte-studio` (or your preferred name)
+   - Project name: `playground` (or your preferred name)
    - Database Password: Choose a strong password (save this!)
    - Region: Choose the closest to your location
 4. Click "Create new project" and wait for setup to complete

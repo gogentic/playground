@@ -1,6 +1,6 @@
-# Protobyte Studio
+# Playground
 
-A powerful 3D physics simulation studio built with React, TypeScript, and Three.js. Features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
+A powerful 3D physics simulation playground built with React, TypeScript, and Three.js. Features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![React](https://img.shields.io/badge/React-19.1-61dafb)
