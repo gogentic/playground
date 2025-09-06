@@ -4,6 +4,8 @@ import { ToolbarIntegrated } from './components/ui/ToolbarIntegrated'
 import { TopMenuBar } from './components/ui/TopMenuBar'
 import { SceneManager } from './components/scenes/SceneManager'
 import { useEngineStore } from './stores/useEngineStore'
+import logoSvg from './assets/logo.svg'
+import logoPng from './assets/logo.png'
 import './App.css'
 
 function App() {
@@ -101,6 +103,10 @@ function App() {
         <TopMenuBar />
         <ToolbarIntegrated />
         <Viewport />
+        <div className="logo-container">
+          <img src={logoPng} alt="Protobyte Logo" className="logo" />
+          <span className="logo-text">Playground</span>
+        </div>
       </div>
       <SceneManager 
         isOpen={showSceneManager}

@@ -1,0 +1,45 @@
+<svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+  <!-- Accurate network graph logo based on provided image -->
+  
+  <!-- Bottom left large node -->
+  <circle cx="40" cy="130" r="18" fill="white"/>
+  
+  <!-- Top left node -->
+  <circle cx="65" cy="45" r="10" fill="white"/>
+  
+  <!-- Center-left large node -->
+  <circle cx="95" cy="70" r="16" fill="white"/>
+  
+  <!-- Top center node -->
+  <circle cx="155" cy="25" r="11" fill="white"/>
+  
+  <!-- Right center large node -->
+  <circle cx="195" cy="65" r="14" fill="white"/>
+  
+  <!-- Top right node -->
+  <circle cx="235" cy="50" r="10" fill="white"/>
+  
+  <!-- Bottom center-right node -->
+  <circle cx="180" cy="115" r="12" fill="white"/>
+  
+  <!-- Bottom right node -->
+  <circle cx="230" cy="125" r="10" fill="white"/>
+  
+  <!-- Main connections - thicker lines -->
+  <line x1="40" y1="130" x2="65" y2="45" stroke="white" stroke-width="3"/>
+  <line x1="65" y1="45" x2="95" y2="70" stroke="white" stroke-width="3"/>
+  <line x1="95" y1="70" x2="155" y2="25" stroke="white" stroke-width="3"/>
+  <line x1="155" y1="25" x2="195" y2="65" stroke="white" stroke-width="3"/>
+  <line x1="195" y1="65" x2="235" y2="50" stroke="white" stroke-width="3"/>
+  <line x1="195" y1="65" x2="230" y2="125" stroke="white" stroke-width="3"/>
+  <line x1="180" y1="115" x2="230" y2="125" stroke="white" stroke-width="3"/>
+  <line x1="95" y1="70" x2="180" y2="115" stroke="white" stroke-width="3"/>
+  <line x1="40" y1="130" x2="95" y2="70" stroke="white" stroke-width="3"/>
+  <line x1="40" y1="130" x2="180" y2="115" stroke="white" stroke-width="3"/>
+  <line x1="195" y1="65" x2="180" y2="115" stroke="white" stroke-width="3"/>
+  
+  <!-- Secondary connections - thinner lines -->
+  <line x1="65" y1="45" x2="155" y2="25" stroke="white" stroke-width="2" opacity="0.7"/>
+  <line x1="155" y1="25" x2="235" y2="50" stroke="white" stroke-width="2" opacity="0.7"/>
+  <line x1="95" y1="70" x2="195" y2="65" stroke="white" stroke-width="2" opacity="0.7"/>
+</svg>

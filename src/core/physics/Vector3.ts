@@ -106,6 +106,10 @@ export class Vector3 {
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
+  distanceTo(v: Vector3): number {
+    return this.distance(v);
+  }
+
   distanceSquared(v: Vector3): number {
     const dx = this.x - v.x;
     const dy = this.y - v.y;

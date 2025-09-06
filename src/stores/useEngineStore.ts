@@ -3,6 +3,8 @@ import { VerletEngine } from '../core/physics/VerletEngine';
 import { Particle } from '../core/primitives/Particle';
 import { Constraint } from '../core/primitives/Constraint';
 import { Composite } from '../core/primitives/Composite';
+import { DynamicsSystem, DynamicType } from '../core/dynamics/DynamicBehavior';
+import type { DynamicBehavior } from '../core/dynamics/DynamicBehavior';
 
 // Local interface to avoid circular dependency
 interface IVector3 {
@@ -47,6 +49,7 @@ type UndoableAction =
 interface EngineState {
   engine: VerletEngine;
   composites: Map<string, Composite>;
+  dynamicsSystem: DynamicsSystem;
   isPlaying: boolean;
   selectedParticleId: string | null;
   selectedConstraintId: string | null;
@@ -137,11 +140,22 @@ interface EngineState {
   updateGravity: (gravity: IVector3) => void;
   updateTimeStep: (timeStep: number) => void;
   updateIterations: (iterations: number) => void;
+  
+  // Dynamics
+  addDynamicBehavior: (particleId: string, behavior: DynamicBehavior) => void;
+  removeDynamicBehavior: (particleId: string, type: DynamicType) => void;
+  clearDynamicBehaviors: (particleId: string) => void;
+  getDynamicBehaviors: (particleId: string) => DynamicBehavior[];
+  
+  // Clear all
+  clearAll: () => void;
+  resetSimulation: () => void;
 }
 
 export const useEngineStore = create<EngineState>((set, get) => ({
   engine: new VerletEngine(),
   composites: new Map(),
+  dynamicsSystem: new DynamicsSystem(),
   isPlaying: false,
   selectedParticleId: null,
   selectedConstraintId: null,
@@ -675,6 +689,64 @@ export const useEngineStore = create<EngineState>((set, get) => ({
         particle.previousPosition.z += deltaPosition.z;
       }
     }
+  },
+  
+  // Dynamics methods
+  addDynamicBehavior: (particleId, behavior) => {
+    const { dynamicsSystem } = get();
+    dynamicsSystem.addBehavior(particleId, behavior);
+  },
+  
+  removeDynamicBehavior: (particleId, type) => {
+    const { dynamicsSystem } = get();
+    dynamicsSystem.removeBehavior(particleId, type);
+  },
+  
+  clearDynamicBehaviors: (particleId) => {
+    const { dynamicsSystem } = get();
+    dynamicsSystem.clearBehaviors(particleId);
+  },
+  
+  getDynamicBehaviors: (particleId) => {
+    const { dynamicsSystem } = get();
+    return dynamicsSystem.getBehaviors(particleId);
+  },
+  
+  // Clear all and reset
+  clearAll: () => {
+    const { engine, dynamicsSystem } = get();
+    engine.clear();
+    dynamicsSystem.reset();
+    set({ 
+      composites: new Map(),
+      selectedParticleId: null,
+      selectedConstraintId: null,
+      selectedCompositeId: null,
+      selectedParticleIds: new Set(),
+      isCreatingConstraint: false,
+      constraintStartParticleId: null,
+      undoStack: [],
+      redoStack: [],
+    });
+  },
+  
+  resetSimulation: () => {
+    const { engine, dynamicsSystem, composites } = get();
+    engine.reset();
+    dynamicsSystem.reset();
+    
+    // Re-add dynamics behaviors if any were present
+    // This would need to be tracked separately if we want to preserve them
+    
+    set({ 
+      isPlaying: false,
+      selectedParticleId: null,
+      selectedConstraintId: null,
+      selectedCompositeId: null,
+      selectedParticleIds: new Set(),
+      isCreatingConstraint: false,
+      constraintStartParticleId: null,
+    });
   },
 }));
 

@@ -15,6 +15,7 @@ export function Scene() {
   const isDragging = useEngineStore((state) => state.isDragging);
   const composites = useEngineStore((state) => state.composites);
   const showBoundingBoxes = useEngineStore((state) => state.showBoundingBoxes);
+  const dynamicsSystem = useEngineStore((state) => state.dynamicsSystem);
   
   // State to force re-renders when particles/constraints change
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -42,6 +43,9 @@ export function Scene() {
       // Limit delta to prevent instability with large time steps
       const clampedDelta = Math.min(delta, 0.033); // Cap at ~30 FPS
       
+      // Apply dynamics before physics update
+      const currentParticles = engine.getParticles();
+      dynamicsSystem.applyDynamics(currentParticles, clampedDelta);
       
       engine.update(clampedDelta);
     }

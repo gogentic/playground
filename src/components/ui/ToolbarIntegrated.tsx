@@ -3,6 +3,7 @@ import { useEngineStore } from '../../stores/useEngineStore';
 import { Particle } from '../../core/primitives/Particle';
 import { Vector3 } from '../../core/physics/Vector3';
 import { CompositeFactory } from '../../core/primitives/Composite';
+import { DynamicType } from '../../core/dynamics/DynamicBehavior';
 import './ToolbarIntegrated.css';
 
 export function ToolbarIntegrated() {
@@ -10,8 +11,16 @@ export function ToolbarIntegrated() {
   const [expandedSections, setExpandedSections] = useState({
     create: true,
     properties: false,
+    dynamics: false,
     environment: false
   });
+  
+  // Dynamics state
+  const [selectedDynamicType, setSelectedDynamicType] = useState<DynamicType>(DynamicType.OSCILLATOR);
+  const [dynamicAmplitude, setDynamicAmplitude] = useState(1);
+  const [dynamicFrequency, setDynamicFrequency] = useState(1);
+  const [dynamicStrength, setDynamicStrength] = useState(1);
+  const [dynamicRadius, setDynamicRadius] = useState(10);
   
   const [clothSegmentsX, setClothSegmentsX] = useState(10);
   const [clothSegmentsY, setClothSegmentsY] = useState(10);
@@ -43,7 +52,11 @@ export function ToolbarIntegrated() {
     updateTimeStep,
     updateIterations,
     clearAll,
-    resetSimulation
+    resetSimulation,
+    addDynamicBehavior,
+    removeDynamicBehavior,
+    clearDynamicBehaviors,
+    getDynamicBehaviors
   } = useEngineStore();
 
   // Initialize from engine
@@ -127,6 +140,63 @@ export function ToolbarIntegrated() {
       0.99
     );
     addComposite(box);
+  };
+
+  const addSoftBall = () => {
+    const ball = CompositeFactory.createSoftBall(
+      new Vector3(0, 10, 0),
+      5,
+      12,
+      0.5,
+      0.7
+    );
+    addComposite(ball);
+  };
+
+  const addBridge = () => {
+    const bridge = CompositeFactory.createBridge(
+      new Vector3(-15, 10, 0),
+      new Vector3(15, 10, 0),
+      12,
+      8,
+      1,
+      0.95
+    );
+    addComposite(bridge);
+  };
+
+  const addChain = () => {
+    const chain = CompositeFactory.createChain(
+      new Vector3(0, 15, 0),
+      new Vector3(0, 5, 0),
+      8,
+      1.5,
+      2,
+      0.99
+    );
+    addComposite(chain);
+  };
+
+  const addPendulum = () => {
+    const pendulum = CompositeFactory.createPendulum(
+      new Vector3(0, 15, 0),
+      10,
+      3,
+      2,
+      1
+    );
+    addComposite(pendulum);
+  };
+
+  const addWheel = () => {
+    const wheel = CompositeFactory.createWheel(
+      new Vector3(0, 10, 0),
+      5,
+      12,
+      1,
+      0.95
+    );
+    addComposite(wheel);
   };
 
   // Apply environmental changes
@@ -219,6 +289,21 @@ export function ToolbarIntegrated() {
               </div>
               <button onClick={addBox} className="tool-btn">
                 Box
+              </button>
+              <button onClick={addSoftBall} className="tool-btn">
+                Soft Ball
+              </button>
+              <button onClick={addBridge} className="tool-btn">
+                Bridge
+              </button>
+              <button onClick={addChain} className="tool-btn">
+                Chain
+              </button>
+              <button onClick={addPendulum} className="tool-btn">
+                Pendulum
+              </button>
+              <button onClick={addWheel} className="tool-btn">
+                Wheel
               </button>
               {isCreatingConstraint && (
                 <button onClick={cancelConstraintCreation} className="tool-btn cancel">
@@ -337,6 +422,158 @@ export function ToolbarIntegrated() {
                 </>
               ) : (
                 <div className="no-selection">No particles selected</div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Dynamics Section */}
+        <div className="collapsible-section">
+          <div className="section-header" onClick={() => toggleSection('dynamics')}>
+            <span className="section-icon">{expandedSections.dynamics ? '▼' : '▶'}</span>
+            <span className="section-title">DYNAMICS</span>
+            {hasSelection && <span className="selection-badge">✨</span>}
+          </div>
+          {expandedSections.dynamics && (
+            <div className="section-content">
+              {hasSelection ? (
+                <>
+                  <div className="property-group">
+                    <label>Behavior Type</label>
+                    <select 
+                      value={selectedDynamicType}
+                      onChange={(e) => setSelectedDynamicType(e.target.value as DynamicType)}
+                      className="dynamic-select"
+                    >
+                      <option value={DynamicType.OSCILLATOR}>Oscillator</option>
+                      <option value={DynamicType.PULSAR}>Pulsar</option>
+                      <option value={DynamicType.ATTRACTOR}>Attractor</option>
+                      <option value={DynamicType.REPULSOR}>Repulsor</option>
+                      <option value={DynamicType.VORTEX}>Vortex</option>
+                      <option value={DynamicType.NOISE}>Noise</option>
+                      <option value={DynamicType.WAVE}>Wave</option>
+                    </select>
+                  </div>
+                  
+                  <div className="property-group">
+                    <label>Amplitude</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={dynamicAmplitude}
+                      onChange={(e) => setDynamicAmplitude(Number(e.target.value))}
+                    />
+                  </div>
+                  
+                  <div className="property-group">
+                    <label>Frequency</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={dynamicFrequency}
+                      onChange={(e) => setDynamicFrequency(Number(e.target.value))}
+                    />
+                  </div>
+                  
+                  {(selectedDynamicType === DynamicType.ATTRACTOR || 
+                    selectedDynamicType === DynamicType.REPULSOR ||
+                    selectedDynamicType === DynamicType.VORTEX) && (
+                    <>
+                      <div className="property-group">
+                        <label>Strength</label>
+                        <input 
+                          type="number" 
+                          step="0.1"
+                          value={dynamicStrength}
+                          onChange={(e) => setDynamicStrength(Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="property-group">
+                        <label>Radius</label>
+                        <input 
+                          type="number" 
+                          step="1"
+                          value={dynamicRadius}
+                          onChange={(e) => setDynamicRadius(Number(e.target.value))}
+                        />
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="button-group">
+                    <button 
+                      onClick={() => {
+                        selectedParticles.forEach(particle => {
+                          if (particle) {
+                            const behavior = {
+                              type: selectedDynamicType,
+                              enabled: true,
+                              amplitude: dynamicAmplitude,
+                              frequency: dynamicFrequency,
+                              phase: 0,
+                              strength: dynamicStrength,
+                              radius: dynamicRadius,
+                              axis: new Vector3(0, 1, 0),
+                              center: particle.position.clone()
+                            };
+                            addDynamicBehavior(particle.id, behavior);
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                      className="tool-btn add-btn"
+                    >
+                      Add Behavior
+                    </button>
+                    
+                    <button 
+                      onClick={() => {
+                        selectedParticles.forEach(particle => {
+                          if (particle) {
+                            removeDynamicBehavior(particle.id, selectedDynamicType);
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                      className="tool-btn remove-btn"
+                    >
+                      Remove
+                    </button>
+                    
+                    <button 
+                      onClick={() => {
+                        selectedParticles.forEach(particle => {
+                          if (particle) {
+                            clearDynamicBehaviors(particle.id);
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                      className="tool-btn clear-btn"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                  
+                  {/* Show active behaviors */}
+                  {selectedParticles.length === 1 && selectedParticles[0] && (
+                    <div className="active-behaviors">
+                      <label>Active Behaviors:</label>
+                      <div className="behavior-list">
+                        {getDynamicBehaviors(selectedParticles[0].id).map((behavior, idx) => (
+                          <div key={idx} className="behavior-tag">
+                            {behavior.type}
+                          </div>
+                        ))}
+                        {getDynamicBehaviors(selectedParticles[0].id).length === 0 && (
+                          <div className="no-behaviors">None</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="no-selection">Select particles to add dynamics</div>
               )}
             </div>
           )}

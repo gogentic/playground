@@ -1,9 +1,9 @@
 .toolbar-integrated {
   position: fixed;
   left: 0;
-  top: 0;
+  top: 180px;
   width: 180px;
-  height: 100vh;
+  height: calc(100vh - 180px);
   background: #2d2d2d;
   color: #d0d0d0;
   border-radius: 0;
@@ -308,4 +308,86 @@
 .stat-value {
   color: #a0a0a0;
   font-weight: 600;
+}
+
+/* Dynamics Section Styles */
+.dynamic-select {
+  width: 100%;
+  padding: 4px 8px;
+  background: #1a1a1a;
+  border: 1px solid #303030;
+  color: #e0e0e0;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.dynamic-select:hover {
+  border-color: #4dabf7;
+}
+
+.button-group {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.tool-btn.add-btn {
+  background: #2e7d32;
+  flex: 1;
+}
+
+.tool-btn.add-btn:hover {
+  background: #388e3c;
+}
+
+.tool-btn.remove-btn {
+  background: #d32f2f;
+  flex: 1;
+}
+
+.tool-btn.remove-btn:hover {
+  background: #e53935;
+}
+
+.tool-btn.clear-btn {
+  background: #616161;
+  flex: 1;
+}
+
+.tool-btn.clear-btn:hover {
+  background: #757575;
+}
+
+.active-behaviors {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #303030;
+}
+
+.active-behaviors label {
+  display: block;
+  font-size: 10px;
+  color: #808080;
+  margin-bottom: 6px;
+}
+
+.behavior-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.behavior-tag {
+  background: #4dabf7;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 0;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.no-behaviors {
+  color: #606060;
+  font-size: 10px;
+  font-style: italic;
 }
