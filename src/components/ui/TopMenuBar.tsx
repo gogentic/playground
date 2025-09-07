@@ -12,8 +12,6 @@ export function TopMenuBar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   
   const engine = useEngineStore((state) => state.engine);
-  const toggleEditMode = useEngineStore((state) => state.toggleEditMode);
-  const isEditMode = useEngineStore((state) => state.isEditMode);
   const resetSimulation = useEngineStore((state) => state.resetSimulation);
   const undo = useEngineStore((state) => state.undo);
   const redo = useEngineStore((state) => state.redo);
@@ -81,10 +79,6 @@ export function TopMenuBar() {
               </button>
               <button onClick={() => handleAction(redo)} disabled={!canRedo()}>
                 Redo <span className="shortcut">Ctrl+Y</span>
-              </button>
-              <div className="menu-separator"></div>
-              <button onClick={() => handleAction(toggleEditMode)}>
-                {isEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode'} <span className="shortcut">E</span>
               </button>
               <div className="menu-separator"></div>
               <button disabled>Select All</button>
@@ -193,14 +187,6 @@ export function TopMenuBar() {
 
       {/* Simulation Controls */}
       <div className="simulation-controls">
-        <button 
-          className={`control-btn ${isEditMode ? 'edit-mode' : ''}`}
-          onClick={toggleEditMode}
-          title={isEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
-        >
-          {isEditMode ? 'EDIT' : 'SIM'}
-        </button>
-        <div className="control-separator"></div>
         {isPlaying ? (
           <button 
             className="control-btn" 
@@ -213,7 +199,6 @@ export function TopMenuBar() {
           <button 
             className="control-btn primary" 
             onClick={play}
-            disabled={isEditMode}
             title="Play"
           >
             ▶
@@ -222,7 +207,7 @@ export function TopMenuBar() {
         <button 
           className="control-btn" 
           onClick={step}
-          disabled={isPlaying || isEditMode}
+          disabled={isPlaying}
           title="Step"
         >
           ⏭

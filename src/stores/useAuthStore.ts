@@ -259,6 +259,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
 // Initialize auth listener
 supabase.auth.onAuthStateChange((event, session) => {
+  // Check domain restriction for OAuth users
+  if (session?.user?.email && !session.user.email.endsWith('@gogentic.ai')) {
+    // Sign out non-gogentic.ai users
+    supabase.auth.signOut();
+    useAuthStore.getState().setSession(null);
+    useAuthStore.getState().setUser(null);
+    useAuthStore.getState().setLoading(false);
+    // You might want to show an error message here
+    console.error('Access denied: Only @gogentic.ai email addresses are allowed');
+    return;
+  }
+  
   useAuthStore.getState().setSession(session);
   useAuthStore.getState().setUser(session?.user ?? null);
   useAuthStore.getState().setLoading(false);
@@ -271,6 +283,16 @@ supabase.auth.onAuthStateChange((event, session) => {
 
 // Check initial session
 supabase.auth.getSession().then(({ data: { session } }) => {
+  // Check domain restriction for OAuth users
+  if (session?.user?.email && !session.user.email.endsWith('@gogentic.ai')) {
+    // Sign out non-gogentic.ai users
+    supabase.auth.signOut();
+    useAuthStore.getState().setSession(null);
+    useAuthStore.getState().setUser(null);
+    useAuthStore.getState().setLoading(false);
+    return;
+  }
+  
   useAuthStore.getState().setSession(session);
   useAuthStore.getState().setUser(session?.user ?? null);
   useAuthStore.getState().setLoading(false);

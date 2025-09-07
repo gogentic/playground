@@ -44,13 +44,26 @@ A powerful 3D physics simulation playground built with React, TypeScript, and Th
 ### Prerequisites
 - Node.js 18.0 or higher
 - npm or yarn package manager
+- Docker and Docker Compose (for containerized deployment)
+- Supabase account (for authentication setup)
+
+### Authentication Setup
+The application requires authentication through Supabase. Access is restricted to `@gogentic.ai` domain emails only.
+
+1. Create a Supabase project at https://supabase.com
+2. Configure OAuth providers (Google and GitHub)
+3. Copy `.env.example` to `.env` and add your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your-project-url
+   VITE_SUPABASE_ANON_KEY=your-anon-key
+   ```
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone git@github.com:irajgreenberg/protobyte-studio.git
-cd protobyte-studio
+git clone git@github.com:gogentic/playground.git
+cd playground
 
 # Install dependencies
 npm install
@@ -67,17 +80,41 @@ The application will be available at [http://localhost:5173](http://localhost:51
 # Create optimized production build
 npm run build
 
-# Preview production build
+# Preview production build locally
 npm run preview
+```
+
+### Docker Deployment
+
+```bash
+# Deploy production container
+./deploy.sh prod
+
+# Deploy development container with hot reload
+./deploy.sh dev
+
+# Update production (pull, rebuild, restart)
+./deploy.sh update
+
+# Monitor container logs
+docker compose -p playground logs -f
+
+# Check container status
+docker compose -p playground ps
 ```
 
 ### Development Commands
 
 ```bash
-npm run dev      # Start development server
+npm run dev      # Start development server (localhost:5173)
 npm run build    # Build for production
 npm run lint     # Run ESLint
 npm run preview  # Preview production build
+
+# Docker commands
+docker compose -p playground up -d      # Start containers
+docker compose -p playground down       # Stop containers
+docker compose -p playground restart    # Restart containers
 ```
 
 ## 🎮 Controls & Usage
@@ -112,7 +149,15 @@ npm run preview  # Preview production build
 
 ### Project Structure
 ```
-protobyte-studio/
+playground/
+├── docs/                   # Setup and configuration documentation
+├── scripts/                # Deployment and setup scripts
+├── docker-compose.yml      # Docker Compose configuration
+├── Dockerfile              # Production container
+├── Dockerfile.dev          # Development container
+├── deploy.sh               # Deployment script
+├── nginx.conf              # Container NGINX config
+├── nginx-site.conf         # Server reverse proxy config
 ├── src/
 │   ├── core/
 │   │   ├── physics/         # Physics engine implementation
@@ -127,7 +172,7 @@ protobyte-studio/
 │   ├── components/
 │   │   ├── ui/             # User interface panels
 │   │   │   ├── ControlPanel.tsx
-│   │   │   ├── Toolbar.tsx
+│   │   │   ├── ToolbarIntegrated.tsx
 │   │   │   ├── ObjectPropertiesPanel.tsx
 │   │   │   ├── EnvironmentalPanel.tsx
 │   │   │   ├── ParticlePropertyPanel.tsx
@@ -140,7 +185,8 @@ protobyte-studio/
 │   │       ├── Ground.tsx
 │   │       └── CompositeBoundingBox.tsx
 │   ├── stores/
-│   │   └── useEngineStore.ts # Zustand state management
+│   │   ├── useEngineStore.ts # Zustand state management
+│   │   └── useAuthStore.ts   # Authentication state
 │   ├── types/              # TypeScript type definitions
 │   ├── utils/              # Utility functions
 │   └── App.tsx             # Main application component
@@ -152,6 +198,9 @@ protobyte-studio/
 - **Three.js + React Three Fiber**: Hardware-accelerated 3D graphics
 - **Zustand**: Lightweight, performant state management
 - **Vite**: Lightning-fast development and optimized builds
+- **Supabase**: Authentication and data persistence
+- **Docker**: Containerized deployment with Docker Compose
+- **NGINX**: Reverse proxy for production deployment
 
 ### Physics Engine Details
 
@@ -267,7 +316,7 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Copyright (c) 2025 Ira Greenberg
+Copyright (c) 2025 Gogentic AI
 
 ## 🙏 Acknowledgments
 
@@ -276,8 +325,12 @@ Copyright (c) 2025 Ira Greenberg
 - **React Three Fiber Team** for the React renderer for Three.js
 - **Zustand** for the elegant state management solution
 
+## 🌐 Live Demo
+
+**Production**: [https://playground.gogentic.ai](https://playground.gogentic.ai)
+
 ## 📧 Contact
 
-Ira Greenberg - [GitHub](https://github.com/irajgreenberg)
+Gogentic AI - [GitHub](https://github.com/gogentic)
 
-Project Link: [https://github.com/irajgreenberg/protobyte-studio](https://github.com/irajgreenberg/protobyte-studio)
+Project Link: [https://github.com/gogentic/playground](https://github.com/gogentic/playground)

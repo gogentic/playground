@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useEngineStore } from '../../stores/useEngineStore';
 import { Particle } from '../../core/primitives/Particle';
 import { Vector3 } from '../../core/physics/Vector3';
-import { CompositeFactory } from '../../core/primitives/Composite';
+import { ObjectRegistry } from '../../core/factories/ObjectRegistry';
 import { DynamicType } from '../../core/dynamics/DynamicBehavior';
 import './ToolbarIntegrated.css';
 
@@ -10,7 +10,7 @@ export function ToolbarIntegrated() {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     create: true,
-    properties: false,
+    edit: false,
     dynamics: false,
     environment: false
   });
@@ -22,9 +22,15 @@ export function ToolbarIntegrated() {
   const [dynamicStrength, setDynamicStrength] = useState(1);
   const [dynamicRadius, setDynamicRadius] = useState(10);
   
-  const [clothSegmentsX, setClothSegmentsX] = useState(10);
-  const [clothSegmentsY, setClothSegmentsY] = useState(10);
+  // Object template controls state
+  const [templateParams, setTemplateParams] = useState<Record<string, any>>({
+    clothSegmentsX: 10,
+    clothSegmentsY: 10
+  });
   const [, forceUpdate] = useState({});
+  
+  // Initialize object registry
+  const objectRegistry = useMemo(() => new ObjectRegistry(), []);
   
   // Environmental properties
   const [gravity, setGravity] = useState({ x: 0, y: -9.81, z: 0 });
@@ -56,7 +62,13 @@ export function ToolbarIntegrated() {
     addDynamicBehavior,
     removeDynamicBehavior,
     clearDynamicBehaviors,
-    getDynamicBehaviors
+    getDynamicBehaviors,
+    deleteSelectedParticles,
+    clearSelection,
+    selectAllParticles,
+    updateParticleProperties,
+    transformMode,
+    setTransformMode
   } = useEngineStore();
 
   // Initialize from engine
@@ -72,16 +84,6 @@ export function ToolbarIntegrated() {
     }
   }, [engine]);
 
-  // Auto-expand properties section when particles are selected
-  useEffect(() => {
-    const hasAnySelection = selectedParticleId || selectedParticleIds.size > 0;
-    if (hasAnySelection && !expandedSections.properties) {
-      setExpandedSections(prev => ({
-        ...prev,
-        properties: true
-      }));
-    }
-  }, [selectedParticleId, selectedParticleIds.size]);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({
@@ -90,113 +92,47 @@ export function ToolbarIntegrated() {
     }));
   };
 
-  const addSingleParticle = () => {
-    const position = {
-      x: Math.random() * 10 - 5,
-      y: 10,
-      z: Math.random() * 10 - 5
-    };
-    
-    const particle = new Particle({
-      position: position,
-      mass: 1,
-      radius: 0.5,
-      damping: 0.99,
-      fixed: false,
-      color: `hsl(${Math.random() * 360}, 70%, 60%)`,
-    });
-    addParticle(particle);
+  // Generic object creation handler
+  const createObject = (templateId: string) => {
+    try {
+      // Get custom params for this template (like cloth segments)
+      const customParams: Record<string, any> = {};
+      const template = objectRegistry.getTemplate(templateId);
+      
+      if (template?.controls) {
+        template.controls.forEach(control => {
+          const paramKey = `${templateId}_${control.param}`;
+          if (templateParams[paramKey] !== undefined) {
+            customParams[control.param] = templateParams[paramKey];
+          }
+        });
+      }
+      
+      // Special handling for cloth segments (backwards compatibility)
+      if (templateId === 'cloth') {
+        customParams.segmentsX = templateParams.clothSegmentsX || 10;
+        customParams.segmentsY = templateParams.clothSegmentsY || 10;
+      }
+      
+      const object = objectRegistry.createObject(templateId, customParams);
+      
+      // Add to engine based on type
+      if (object instanceof Particle) {
+        addParticle(object);
+      } else {
+        addComposite(object);
+      }
+    } catch (error) {
+      console.error(`Failed to create object: ${templateId}`, error);
+    }
   };
-
-  const addRope = () => {
-    const rope = CompositeFactory.createRope(
-      new Vector3(-5, 10, 0),
-      new Vector3(5, 10, 0),
-      10,
-      0.5,
-      0.9
-    );
-    addComposite(rope);
-  };
-
-  const addCloth = () => {
-    const cloth = CompositeFactory.createCloth(
-      10,
-      10,
-      clothSegmentsX,
-      clothSegmentsY,
-      new Vector3(0, 10, 0),
-      0.1,
-      0.95
-    );
-    addComposite(cloth);
-  };
-
-  const addBox = () => {
-    const box = CompositeFactory.createBox(
-      new Vector3(5, 5, 5),
-      new Vector3(0, 10, 0),
-      1,
-      0.99
-    );
-    addComposite(box);
-  };
-
-  const addSoftBall = () => {
-    const ball = CompositeFactory.createSoftBall(
-      new Vector3(0, 10, 0),
-      5,
-      12,
-      0.5,
-      0.7
-    );
-    addComposite(ball);
-  };
-
-  const addBridge = () => {
-    const bridge = CompositeFactory.createBridge(
-      new Vector3(-15, 10, 0),
-      new Vector3(15, 10, 0),
-      12,
-      8,
-      1,
-      0.95
-    );
-    addComposite(bridge);
-  };
-
-  const addChain = () => {
-    const chain = CompositeFactory.createChain(
-      new Vector3(0, 15, 0),
-      new Vector3(0, 5, 0),
-      8,
-      1.5,
-      2,
-      0.99
-    );
-    addComposite(chain);
-  };
-
-  const addPendulum = () => {
-    const pendulum = CompositeFactory.createPendulum(
-      new Vector3(0, 15, 0),
-      10,
-      3,
-      2,
-      1
-    );
-    addComposite(pendulum);
-  };
-
-  const addWheel = () => {
-    const wheel = CompositeFactory.createWheel(
-      new Vector3(0, 10, 0),
-      5,
-      12,
-      1,
-      0.95
-    );
-    addComposite(wheel);
+  
+  // Update template parameter
+  const updateTemplateParam = (paramKey: string, value: any) => {
+    setTemplateParams(prev => ({
+      ...prev,
+      [paramKey]: value
+    }));
   };
 
   // Apply environmental changes
@@ -257,170 +193,167 @@ export function ToolbarIntegrated() {
           </div>
           {expandedSections.create && (
             <div className="section-content">
-              <button onClick={addSingleParticle} className="tool-btn">
-                Particle
-              </button>
-              <button onClick={addRope} className="tool-btn">
-                Rope
-              </button>
-              <div className="tool-with-controls">
-                <button onClick={addCloth} className="tool-btn">
-                  Cloth
-                </button>
-                <div className="inline-controls">
-                  <label>X:</label>
-                  <input 
-                    type="number" 
-                    min="2" 
-                    max="50" 
-                    value={clothSegmentsX}
-                    onChange={(e) => setClothSegmentsX(Number(e.target.value))}
-                  />
-                  <label>Y:</label>
-                  <input 
-                    type="number" 
-                    min="2" 
-                    max="50" 
-                    value={clothSegmentsY}
-                    onChange={(e) => setClothSegmentsY(Number(e.target.value))}
-                  />
+              {objectRegistry.getCategories().map(category => (
+                <div key={category.id} className="object-category">
+                  {category.objects.map(template => (
+                    <div key={template.id}>
+                      {template.controls ? (
+                        <div className="tool-with-controls">
+                          <button 
+                            onClick={() => createObject(template.id)} 
+                            className="tool-btn"
+                            title={template.description}
+                          >
+                            {template.name}
+                          </button>
+                          <div className="inline-controls">
+                            {template.controls.map(control => (
+                              <div key={control.param} className="control-group">
+                                <label>{control.label}:</label>
+                                <input 
+                                  type={control.type}
+                                  min={control.min}
+                                  max={control.max}
+                                  value={templateParams[`${template.id}_${control.param}`] || 
+                                         (template.id === 'cloth' && control.param === 'segmentsX' ? templateParams.clothSegmentsX : 
+                                          template.id === 'cloth' && control.param === 'segmentsY' ? templateParams.clothSegmentsY :
+                                          template.defaultParams[control.param])}
+                                  onChange={(e) => {
+                                    const value = control.type === 'number' ? Number(e.target.value) : e.target.value;
+                                    updateTemplateParam(`${template.id}_${control.param}`, value);
+                                    // Backwards compatibility for cloth
+                                    if (template.id === 'cloth') {
+                                      if (control.param === 'segmentsX') {
+                                        updateTemplateParam('clothSegmentsX', value);
+                                      } else if (control.param === 'segmentsY') {
+                                        updateTemplateParam('clothSegmentsY', value);
+                                      }
+                                    }
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => createObject(template.id)} 
+                          className="tool-btn"
+                          title={template.description}
+                        >
+                          {template.name}
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <button onClick={addBox} className="tool-btn">
-                Box
-              </button>
-              <button onClick={addSoftBall} className="tool-btn">
-                Soft Ball
-              </button>
-              <button onClick={addBridge} className="tool-btn">
-                Bridge
-              </button>
-              <button onClick={addChain} className="tool-btn">
-                Chain
-              </button>
-              <button onClick={addPendulum} className="tool-btn">
-                Pendulum
-              </button>
-              <button onClick={addWheel} className="tool-btn">
-                Wheel
-              </button>
-              {isCreatingConstraint && (
-                <button onClick={cancelConstraintCreation} className="tool-btn cancel">
-                  Cancel Constraint
-                </button>
-              )}
+              ))}
             </div>
           )}
         </div>
 
-        {/* Object Properties Section */}
+        {/* Edit Section */}
         <div className="collapsible-section">
-          <div className="section-header" onClick={() => toggleSection('properties')}>
-            <span className="section-icon">{expandedSections.properties ? '▼' : '▶'}</span>
-            <span className="section-title">OBJECT PROPERTIES</span>
-            {hasSelection && <span className="selection-badge">{selectedParticles.length}</span>}
+          <div className="section-header" onClick={() => toggleSection('edit')}>
+            <span className="section-icon">{expandedSections.edit ? '▼' : '▶'}</span>
+            <span className="section-title">EDIT</span>
           </div>
-          {expandedSections.properties && (
+          {expandedSections.edit && (
             <div className="section-content">
-              {hasSelection ? (
-                <>
-                  <div className="property-group">
-                    <label>Mass</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={getAverageProperty('mass').toFixed(1)}
-                      onChange={(e) => {
-                        selectedParticles.forEach(p => {
-                          if (p) p.mass = Number(e.target.value);
-                        });
-                        forceUpdate({});
-                      }}
-                    />
-                  </div>
-                  <div className="property-group">
-                    <label>Radius</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={getAverageProperty('radius').toFixed(1)}
-                      onChange={(e) => {
-                        selectedParticles.forEach(p => {
-                          if (p) p.radius = Number(e.target.value);
-                        });
-                        forceUpdate({});
-                      }}
-                    />
-                  </div>
-                  <div className="property-group">
-                    <label>Damping</label>
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      min="0"
-                      max="1"
-                      value={getAverageProperty('damping').toFixed(2)}
-                      onChange={(e) => {
-                        selectedParticles.forEach(p => {
-                          if (p) p.damping = Number(e.target.value);
-                        });
-                        forceUpdate({});
-                      }}
-                    />
-                  </div>
-                  <div className="property-group color-group">
-                    <label>Color</label>
-                    <div className="color-input-wrapper">
-                      <div 
-                        className="color-square"
-                        style={{ 
-                          backgroundColor: selectedParticles.length === 1 && selectedParticles[0]?.color 
-                            ? selectedParticles[0].color 
-                            : selectedParticles.length > 1 
-                              ? '#808080' 
-                              : '#4dabf7'
-                        }}
-                        onClick={() => {
-                          const colorInput = document.getElementById('particle-color-input');
-                          if (colorInput) colorInput.click();
-                        }}
-                      />
-                      <input 
-                        id="particle-color-input"
-                        type="color"
-                        className="hidden-color-input"
-                        value={selectedParticles.length === 1 && selectedParticles[0]?.color ? selectedParticles[0].color : '#4dabf7'}
-                        onChange={(e) => {
-                          selectedParticles.forEach(p => {
-                            if (p) p.color = e.target.value;
+              {/* Transform Mode Controls */}
+              <div className="transform-modes">
+                <div className="mode-label">Transform Mode</div>
+                <div className="mode-buttons">
+                  <button 
+                    onClick={() => setTransformMode('translate')}
+                    className={`mode-btn ${transformMode === 'translate' ? 'active' : ''}`}
+                    title="Translate (T)"
+                  >
+                    <span className="mode-icon">↔</span>
+                    <span className="mode-text">Move</span>
+                  </button>
+                  <button 
+                    onClick={() => setTransformMode('rotate')}
+                    className={`mode-btn ${transformMode === 'rotate' ? 'active' : ''}`}
+                    title="Rotate (R)"
+                  >
+                    <span className="mode-icon">↻</span>
+                    <span className="mode-text">Rotate</span>
+                  </button>
+                  <button 
+                    onClick={() => setTransformMode('scale')}
+                    className={`mode-btn ${transformMode === 'scale' ? 'active' : ''}`}
+                    title="Scale (S)"
+                  >
+                    <span className="mode-icon">⬚</span>
+                    <span className="mode-text">Scale</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="edit-separator"></div>
+              
+              {/* Selection Actions */}
+              <div className="edit-actions">
+                <button 
+                  onClick={() => selectAllParticles()}
+                  className="tool-btn"
+                  disabled={!isEditMode}
+                  title="Select All (Ctrl+A)"
+                >
+                  Select All
+                </button>
+                <button 
+                  onClick={() => clearSelection()}
+                  className="tool-btn"
+                  disabled={!hasSelection}
+                  title="Clear Selection (Esc)"
+                >
+                  Clear Selection
+                </button>
+              </div>
+              
+              {/* Object Actions */}
+              <div className="edit-actions">
+                <button 
+                  onClick={() => {
+                    if (isEditMode && hasSelection) {
+                      // Duplicate selected particles
+                      selectedParticles.forEach(p => {
+                        if (p) {
+                          const newParticle = new Particle({
+                            position: { x: p.position.x + 2, y: p.position.y + 2, z: p.position.z + 2 },
+                            mass: p.mass,
+                            radius: p.radius,
+                            damping: p.damping,
+                            fixed: p.fixed,
+                            color: p.color
                           });
-                          // Force re-render to update the color square
-                          forceUpdate({});
-                        }}
-                      />
-                      {selectedParticles.length > 1 && (
-                        <span className="multi-select-label">Multiple</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="property-group">
-                    <label>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedParticles.every(p => p && p.fixed)}
-                        onChange={(e) => {
-                          selectedParticles.forEach(p => {
-                            if (p) p.fixed = e.target.checked;
-                          });
-                          forceUpdate({});
-                        }}
-                      />
-                      Fixed
-                    </label>
-                  </div>
-                </>
-              ) : (
-                <div className="no-selection">No particles selected</div>
+                          addParticle(newParticle);
+                        }
+                      });
+                    }
+                  }}
+                  className="tool-btn"
+                  disabled={!hasSelection || !isEditMode}
+                  title="Duplicate (Ctrl+D)"
+                >
+                  Duplicate
+                </button>
+                <button 
+                  onClick={() => deleteSelectedParticles()}
+                  className="tool-btn delete-btn"
+                  disabled={!hasSelection || !isEditMode}
+                  title="Delete (Delete/Backspace)"
+                >
+                  Delete
+                </button>
+              </div>
+              
+              {isCreatingConstraint && (
+                <button onClick={cancelConstraintCreation} className="tool-btn cancel">
+                  Cancel Constraint
+                </button>
               )}
             </div>
           )}
@@ -732,6 +665,130 @@ export function ToolbarIntegrated() {
               </div>
             </div>
           )}
+        </div>
+        
+        {/* Properties Section - Always visible */}
+        <div className="properties-section">
+          <div className="section-header">
+            <span className="section-title">PROPERTIES</span>
+            {hasSelection && <span className="selection-badge">{selectedParticles.length}</span>}
+          </div>
+          <div className="properties-content">
+              {hasSelection ? (
+                <>
+                  <div className="property-group">
+                    <label>Mass</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={getAverageProperty('mass').toFixed(1)}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        selectedParticles.forEach(p => {
+                          if (p) {
+                            updateParticleProperties(p.id, { mass: value });
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                    />
+                  </div>
+                  <div className="property-group">
+                    <label>Radius</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={getAverageProperty('radius').toFixed(1)}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        selectedParticles.forEach(p => {
+                          if (p) {
+                            updateParticleProperties(p.id, { radius: value });
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                    />
+                  </div>
+                  <div className="property-group">
+                    <label>Damping</label>
+                    <input 
+                      type="number" 
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      value={getAverageProperty('damping').toFixed(2)}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        selectedParticles.forEach(p => {
+                          if (p) {
+                            updateParticleProperties(p.id, { damping: value });
+                          }
+                        });
+                        forceUpdate({});
+                      }}
+                    />
+                  </div>
+                  <div className="property-group color-group">
+                    <label>Color</label>
+                    <div className="color-input-wrapper">
+                      <div 
+                        className="color-square"
+                        style={{ 
+                          backgroundColor: selectedParticles.length === 1 && selectedParticles[0]?.color 
+                            ? selectedParticles[0].color 
+                            : selectedParticles.length > 1 
+                              ? '#808080' 
+                              : '#4dabf7'
+                        }}
+                        onClick={() => {
+                          const colorInput = document.getElementById('particle-color-input');
+                          if (colorInput) colorInput.click();
+                        }}
+                      />
+                      <input 
+                        id="particle-color-input"
+                        type="color"
+                        className="hidden-color-input"
+                        value={selectedParticles.length === 1 && selectedParticles[0]?.color ? selectedParticles[0].color : '#4dabf7'}
+                        onChange={(e) => {
+                          selectedParticles.forEach(p => {
+                            if (p) {
+                              updateParticleProperties(p.id, { color: e.target.value });
+                            }
+                          });
+                          // Force re-render to update the color square
+                          forceUpdate({});
+                        }}
+                      />
+                      {selectedParticles.length > 1 && (
+                        <span className="multi-select-label">Multiple</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="property-group">
+                    <label>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedParticles.every(p => p && p.fixed)}
+                        onChange={(e) => {
+                          const value = e.target.checked;
+                          selectedParticles.forEach(p => {
+                            if (p) {
+                              updateParticleProperties(p.id, { fixed: value });
+                            }
+                          });
+                          forceUpdate({});
+                        }}
+                      />
+                      Fixed
+                    </label>
+                  </div>
+                </>
+              ) : (
+                <div className="no-selection">No particles selected</div>
+              )}
+          </div>
         </div>
         
         {/* Statistics Section - Always at bottom */}

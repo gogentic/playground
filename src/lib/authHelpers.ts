@@ -33,5 +33,11 @@ export function getWhitelistMessage(): string {
     return '';
   }
   
+  // Check if it's a domain restriction
+  if (whitelist.startsWith('@')) {
+    const domain = whitelist.substring(1);
+    return `Access restricted to ${domain} email addresses`;
+  }
+  
   return 'Registration is restricted to authorized emails only.';
 }

@@ -23,10 +23,6 @@ export function ControlPanel() {
     updateGravity,
     updateTimeStep,
     updateIterations,
-    // Edit mode
-    isEditMode,
-    toggleEditMode,
-    isDragging,
     // Undo/Redo
     undo,
     redo,
@@ -56,39 +52,24 @@ export function ControlPanel() {
       {!collapsed && (
       <div className="panel-content">
       <div className="panel-section">
-        <h3>Edit Mode</h3>
-        <div className="button-group">
+        <h3>History</h3>
+        <div className="undo-redo-buttons">
           <button 
-            onClick={toggleEditMode} 
-            className={`btn ${isEditMode ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={undo} 
+            disabled={!canUndo()}
+            className="btn btn-secondary"
+            title="Undo (Ctrl+Z)"
           >
-            {isEditMode ? '🎯 Exit Edit Mode' : '✏️ Enter Edit Mode'}
+            ↶ Undo
           </button>
-          {isEditMode && (
-            <div className="edit-mode-info">
-              <p>🖱️ Drag particles to reposition them</p>
-              {isDragging && <p>🔄 Dragging particle...</p>}
-              
-              <div className="undo-redo-buttons">
-                <button 
-                  onClick={undo} 
-                  disabled={!canUndo()}
-                  className="btn btn-secondary"
-                  title="Undo (Ctrl+Z)"
-                >
-                  ↶ Undo
-                </button>
-                <button 
-                  onClick={redo} 
-                  disabled={!canRedo()}
-                  className="btn btn-secondary"
-                  title="Redo (Ctrl+Y)"
-                >
-                  ↷ Redo
-                </button>
-              </div>
-            </div>
-          )}
+          <button 
+            onClick={redo} 
+            disabled={!canRedo()}
+            className="btn btn-secondary"
+            title="Redo (Ctrl+Y)"
+          >
+            ↷ Redo
+          </button>
         </div>
       </div>
 
@@ -100,22 +81,17 @@ export function ControlPanel() {
               ⏸ Pause
             </button>
           ) : (
-            <button onClick={play} className="btn btn-primary" disabled={isEditMode}>
+            <button onClick={play} className="btn btn-primary">
               ▶ Play
             </button>
           )}
-          <button onClick={step} className="btn btn-secondary" disabled={isPlaying || isEditMode}>
+          <button onClick={step} className="btn btn-secondary" disabled={isPlaying}>
             ⏭ Step
           </button>
           <button onClick={reset} className="btn btn-danger">
             ⏹ Reset
           </button>
         </div>
-        {isEditMode && (
-          <div className="mode-indicator">
-            <span className="edit-mode-badge">Edit Mode Active - Physics Paused</span>
-          </div>
-        )}
       </div>
 
       <div className="panel-section">

@@ -3,7 +3,8 @@ import { OrbitControls, Grid } from '@react-three/drei';
 import { Scene } from './Scene';
 import { useEngineStore } from '../../stores/useEngineStore';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { Vector3 } from 'three';
 
 export function Viewport() {
   const showGrid = useEngineStore((state) => state.showGrid);
@@ -21,12 +22,29 @@ export function Viewport() {
   const removeParticle = useEngineStore((state) => state.removeParticle);
   const removeConstraint = useEngineStore((state) => state.removeConstraint);
   const deleteSelectedParticles = useEngineStore((state) => state.deleteSelectedParticles);
+  const transformMode = useEngineStore((state) => state.transformMode);
+  const isPotentialDragTarget = useEngineStore((state) => state.isPotentialDragTarget);
+  const cameraTarget = useEngineStore((state) => state.cameraTarget);
+  const setCameraTarget = useEngineStore((state) => state.setCameraTarget);
+  
+  const controlsRef = useRef<any>(null);
 
-  const handleCanvasClick = () => {
-    if (isCreatingConstraint) {
-      cancelConstraintCreation();
+
+  // Handle camera target changes
+  useEffect(() => {
+    if (cameraTarget && controlsRef.current) {
+      // Smoothly update the camera target
+      controlsRef.current.target.set(
+        cameraTarget.x,
+        cameraTarget.y,
+        cameraTarget.z
+      );
+      controlsRef.current.update();
+      
+      // Clear the camera target after applying
+      setTimeout(() => setCameraTarget(null), 100);
     }
-  };
+  }, [cameraTarget, setCameraTarget]);
 
   // Handle Escape key to clear selection
   useEffect(() => {
@@ -77,7 +95,12 @@ export function Viewport() {
         onCreated={({ gl }) => {
           gl.shadowMap.enabled = true;
         }}
-        onClick={handleCanvasClick}
+        onPointerMissed={() => {
+          // Clear selection when clicking on empty space
+          if (!isDragging) {
+            clearSelection();
+          }
+        }}
       >
         <color attach="background" args={['#1a1a1a']} />
         <fog attach="fog" args={['#1a1a1a', 100, 500]} />
@@ -91,6 +114,7 @@ export function Viewport() {
         />
         
         <OrbitControls
+          ref={controlsRef}
           enablePan={!isDragging}
           enableZoom={!isDragging}
           enableRotate={!isDragging}

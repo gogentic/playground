@@ -4,6 +4,10 @@
 
 Playground is a powerful 3D physics simulation studio built with React, TypeScript, and Three.js. It features real-time Verlet integration physics, interactive particle manipulation, and a comprehensive editing environment for creating and experimenting with physical simulations.
 
+**Domain**: https://playground.gogentic.ai  
+**Repository**: git@github.com:gogentic/playground.git  
+**Access**: Restricted to @gogentic.ai domain emails only
+
 ## Commands
 
 ### Development Commands
@@ -21,9 +25,26 @@ npm run preview
 npm run lint
 ```
 
+### Docker Deployment Commands
+```bash
+# Deploy production (builds and starts container)
+./deploy.sh prod
+
+# Deploy development with hot reload
+./deploy.sh dev
+
+# Update production (pull, rebuild, restart)
+./deploy.sh update
+
+# Docker Compose commands
+docker compose -p playground ps        # Check status
+docker compose -p playground logs -f   # View logs
+docker compose -p playground down      # Stop containers
+docker compose -p playground restart   # Restart containers
+```
+
 ### Git Workflow
 ```bash
-# The project is currently on feature/ui_grid branch
 # Main branch is 'main' (use this for PRs)
 git checkout main
 git pull origin main
@@ -38,6 +59,9 @@ git checkout -b feature/your-feature
 - **Three.js + React Three Fiber** - Hardware-accelerated 3D graphics
 - **Zustand** - Lightweight, performant state management
 - **Vite** - Lightning-fast development and optimized builds
+- **Supabase** - Authentication (OAuth & Email) and data persistence
+- **Docker** - Containerized deployment with Docker Compose
+- **NGINX** - Reverse proxy for production deployment
 
 ### Project Structure
 ```
@@ -54,9 +78,11 @@ playground/
 │   │   └── systems/
 │   │       └── SpatialHash.ts   # Collision optimization system
 │   ├── components/
+│   │   ├── auth/                # Authentication components
+│   │   │   └── AuthForm.tsx     # Sign-in form with OAuth providers
 │   │   ├── ui/                  # User interface panels
 │   │   │   ├── ControlPanel.tsx         # Play/pause/reset controls
-│   │   │   ├── Toolbar.tsx              # Object creation tools
+│   │   │   ├── ToolbarIntegrated.tsx    # Object creation tools (no submenu)
 │   │   │   ├── ObjectPropertiesPanel.tsx # Entity property editor
 │   │   │   ├── EnvironmentalPanel.tsx   # Physics parameter controls
 │   │   │   ├── ParticlePropertyPanel.tsx # Particle-specific settings
@@ -66,10 +92,12 @@ playground/
 │   │       ├── Scene.tsx                # Three.js scene orchestrator
 │   │       ├── ParticleRenderer.tsx     # Particle visualization
 │   │       ├── ConstraintRenderer.tsx   # Constraint visualization
+│   │       ├── TransformGizmo.tsx       # 3D manipulation arrows/gizmo
 │   │       ├── Ground.tsx               # Ground plane rendering
 │   │       └── CompositeBoundingBox.tsx # Bounding box visualization
 │   ├── stores/
-│   │   └── useEngineStore.ts    # Centralized state management (Zustand)
+│   │   ├── useEngineStore.ts    # Centralized state management (Zustand)
+│   │   └── useAuthStore.ts      # Authentication state (Supabase)
 │   ├── types/                   # TypeScript type definitions
 │   │   └── physics.ts          # Core physics interfaces
 │   ├── utils/                   # Utility functions
@@ -97,6 +125,7 @@ playground/
 #### 3. Component Architecture (React + Three.js)
 - **Viewport**: React Three Fiber canvas with OrbitControls
 - **Scene Management**: Separate renderers for different entity types
+- **Transform Gizmo**: 3D manipulation arrows (X=red, Y=green, Z=blue) with plane constraints
 - **UI Panels**: Modular interface components with CSS styling
 - **Error Boundaries**: Robust error handling for 3D rendering
 
@@ -113,7 +142,21 @@ playground/
 - **Box Frames**: Rigid 3D structures with diagonal bracing
 - **Metadata Linking**: Particles track their parent composite
 
+#### 6. Authentication System (Supabase)
+- **OAuth Providers**: Google and GitHub authentication
+- **Email Authentication**: Magic link sign-in for @gogentic.ai emails
+- **Domain Restriction**: Access limited to @gogentic.ai domain only
+- **Session Management**: Persistent authentication across sessions
+- **User State**: Managed via useAuthStore (Zustand)
+
 ### Key Features
+
+#### Authentication & Access Control
+- Required sign-in before accessing application
+- OAuth support (Google and GitHub)
+- Email authentication with domain restriction
+- Automatic session persistence
+- Unauthorized user rejection
 
 #### Physics Simulation
 - Real-time 60 FPS Verlet integration
@@ -125,6 +168,7 @@ playground/
 #### Interactive Tools
 - Edit mode with physics pause
 - Multi-particle selection and manipulation
+- Transform gizmo with visual arrows for dragging particles
 - Constraint creation between particles
 - Undo/Redo with keyboard shortcuts (Ctrl+Z/Y)
 - Property panels for real-time parameter editing
@@ -149,9 +193,19 @@ playground/
 - **tsconfig.json**: TypeScript configuration with strict settings
 - **eslint.config.js**: ESLint with TypeScript and React rules
 
-#### Environment
+#### Docker & Deployment
+- **Dockerfile**: Multi-stage production build with NGINX
+- **Dockerfile.dev**: Development container with hot reload
+- **docker-compose.yml**: Docker Compose configuration (project: playground)
+- **.dockerignore**: Excludes unnecessary files from Docker build
+- **deploy.sh**: Deployment script for production/dev/update workflows
+
+#### Environment & Server
 - **package.json**: Dependencies and build scripts
 - **.claude/settings.local.json**: Claude Code permissions for development commands
+- **.env**: Supabase configuration and environment variables
+- **nginx.conf**: Container NGINX configuration
+- **nginx-site.conf**: Production server NGINX reverse proxy configuration
 
 ### Development Guidelines
 
@@ -193,14 +247,36 @@ playground/
 - Grid and ground plane toggle options
 - Error boundaries prevent cascade failures
 
+## Deployment Architecture
+
+### Current Production Deployment
+**The application is CURRENTLY RUNNING in production at https://playground.gogentic.ai**
+- **Live Container**: Docker container named `playground-app` is actively running
+- **Container Port**: Bound to 127.0.0.1:3080 (localhost only for security)
+- **Public Access**: NGINX reverse proxy routes playground.gogentic.ai → localhost:3080
+- **SSL/TLS**: Handled by NGINX with Let's Encrypt certificates
+- **Architecture**: Internet → NGINX (443) → Docker (3080) → Application
+
+### Container Management
+- **Check Status**: `docker compose -p playground ps`
+- **View Logs**: `docker compose -p playground logs -f`
+- **Restart**: `docker compose -p playground restart`
+- **Stop**: `docker compose -p playground down`
+
+### Deployment Workflow
+1. **Update Production**: `./deploy.sh update` (pulls latest, rebuilds, restarts container)
+2. **Fresh Deploy**: `./deploy.sh prod` (complete rebuild and restart)
+3. **Development Mode**: `./deploy.sh dev` (with hot reload, runs alongside production)
+4. **Direct Access**: Production is live at https://playground.gogentic.ai
+
 ## AI Assistant Rules
 
 ### Existing Configuration
 The project has a `.claude/settings.local.json` file with permissions for:
-- Development server commands (`npm run dev`)
-- Build commands (`npm run build`) 
-- Git operations (checkout, push, remote)
-- System tools (lsof, tree)
+- Development server commands (`npm run dev`, `npm run build`)
+- Docker commands (`docker compose`)
+- Git operations (checkout, push, remote, pull, merge)
+- System tools (lsof, tree, curl, etc.)
 
 ### No Existing Rules
 - No `.cursorrules` file found
@@ -229,3 +305,10 @@ The project has a `.claude/settings.local.json` file with permissions for:
 - Follow the existing CSS class naming conventions
 - Use Zustand store for all state management, avoid local state where possible
 - Implement keyboard shortcuts following the existing pattern in App.tsx
+
+### Recent UI Changes
+- **Logo kerning**: PLAYGROUND text letter-spacing increased to 4px
+- **Toolbar simplified**: Removed "Tools" submenu header, starts directly with "Create"
+- **Authentication wall**: Application requires sign-in before access
+- **OAuth buttons**: Custom SVG icons for Google and GitHub sign-in
+- **Transform gizmo**: 3D arrow gizmo for dragging particles along X, Y, Z axes and XY, XZ, YZ planes

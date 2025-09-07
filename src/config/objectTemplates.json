@@ -1,0 +1,173 @@
+{
+  "categories": [
+    {
+      "id": "particles",
+      "name": "Particles",
+      "icon": "⚪",
+      "objects": [
+        {
+          "id": "particle",
+          "name": "Particle",
+          "factory": "particle",
+          "description": "Single physics particle",
+          "defaultParams": {
+            "mass": 1,
+            "radius": 0.5,
+            "damping": 0.99,
+            "randomPosition": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "softBodies",
+      "name": "Soft Bodies",
+      "icon": "🪢",
+      "objects": [
+        {
+          "id": "rope",
+          "name": "Rope",
+          "factory": "rope",
+          "description": "Flexible rope with connected particles",
+          "defaultParams": {
+            "startX": -5,
+            "startY": 10,
+            "startZ": 0,
+            "endX": 5,
+            "endY": 10,
+            "endZ": 0,
+            "segments": 10,
+            "mass": 0.5,
+            "stiffness": 0.9
+          }
+        },
+        {
+          "id": "cloth",
+          "name": "Cloth",
+          "factory": "cloth",
+          "description": "2D cloth simulation",
+          "defaultParams": {
+            "width": 10,
+            "height": 10,
+            "segmentsX": 15,
+            "segmentsY": 15,
+            "positionY": 10,
+            "mass": 0.1,
+            "stiffness": 0.95
+          }
+        },
+        {
+          "id": "softBall",
+          "name": "Soft Ball",
+          "factory": "softBall",
+          "description": "Deformable sphere",
+          "defaultParams": {
+            "centerX": 0,
+            "centerY": 10,
+            "centerZ": 0,
+            "radius": 5,
+            "segments": 12,
+            "mass": 0.5,
+            "stiffness": 0.7
+          }
+        },
+        {
+          "id": "chain",
+          "name": "Chain",
+          "factory": "chain",
+          "description": "Heavy chain with rigid links",
+          "defaultParams": {
+            "startX": 0,
+            "startY": 15,
+            "startZ": 0,
+            "endX": 0,
+            "endY": 5,
+            "endZ": 0,
+            "segments": 8,
+            "linkRadius": 1.5,
+            "mass": 2,
+            "damping": 0.99
+          }
+        }
+      ]
+    },
+    {
+      "id": "structures",
+      "name": "Structures",
+      "icon": "🏗️",
+      "objects": [
+        {
+          "id": "box",
+          "name": "Box",
+          "factory": "box",
+          "description": "Rigid box frame",
+          "defaultParams": {
+            "sizeX": 5,
+            "sizeY": 5,
+            "sizeZ": 5,
+            "positionX": 0,
+            "positionY": 10,
+            "positionZ": 0,
+            "mass": 1,
+            "damping": 0.99
+          }
+        },
+        {
+          "id": "bridge",
+          "name": "Bridge",
+          "factory": "bridge",
+          "description": "Suspension bridge structure",
+          "defaultParams": {
+            "startX": -15,
+            "startY": 10,
+            "startZ": 0,
+            "endX": 15,
+            "endY": 10,
+            "endZ": 0,
+            "segments": 12,
+            "height": 8,
+            "mass": 1,
+            "stiffness": 0.95
+          }
+        },
+        {
+          "id": "wheel",
+          "name": "Wheel",
+          "factory": "wheel",
+          "description": "Circular wheel structure",
+          "defaultParams": {
+            "centerX": 0,
+            "centerY": 10,
+            "centerZ": 0,
+            "radius": 5,
+            "spokes": 12,
+            "mass": 1,
+            "stiffness": 0.95
+          }
+        }
+      ]
+    },
+    {
+      "id": "dynamics",
+      "name": "Dynamics",
+      "icon": "⚡",
+      "objects": [
+        {
+          "id": "pendulum",
+          "name": "Pendulum",
+          "factory": "pendulum",
+          "description": "Simple pendulum",
+          "defaultParams": {
+            "anchorX": 0,
+            "anchorY": 15,
+            "anchorZ": 0,
+            "length": 10,
+            "bobRadius": 3,
+            "bobMass": 2,
+            "ropeSegments": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { PlaneGeometry, MeshStandardMaterial } from 'three';
 import { useEngineStore } from '../../stores/useEngineStore';
 
@@ -6,8 +6,23 @@ export function Ground() {
   const showGround = useEngineStore((state) => state.showGround);
   const engine = useEngineStore((state) => state.engine);
   const clearSelection = useEngineStore((state) => state.clearSelection);
+  const isDragging = useEngineStore((state) => state.isDragging);
   
   const groundLevel = engine.getGroundLevel();
+  const justStoppedDragging = useRef(false);
+  
+  // Track when dragging stops
+  useEffect(() => {
+    if (!isDragging && justStoppedDragging.current === false) {
+      // Dragging just stopped
+      justStoppedDragging.current = true;
+      // Reset flag after a short delay
+      const timeout = setTimeout(() => {
+        justStoppedDragging.current = false;
+      }, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [isDragging]);
   
   // Create a large plane for the ground
   const geometry = useMemo(() => new PlaneGeometry(200, 200), []);
@@ -25,7 +40,10 @@ export function Ground() {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    clearSelection();
+    // Don't clear selection if we're currently dragging or just finished dragging
+    if (!isDragging && !justStoppedDragging.current) {
+      clearSelection();
+    }
   };
 
   return (

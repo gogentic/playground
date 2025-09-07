@@ -8,10 +8,10 @@ chmod o+x /home/ira
 
 # Ensure all parent directories have execute permission
 chmod o+x /home/ira/dev
-chmod o+x /home/ira/dev/protobyte-studio
+chmod o+x /home/ira/dev/PLAYGROUND
 
 # Give read and execute permissions to the dist folder and its contents
-chmod -R o+rx /home/ira/dev/protobyte-studio/dist
+chmod -R o+rx /home/ira/dev/PLAYGROUND/dist
 
 echo "Permissions fixed!"
 echo ""

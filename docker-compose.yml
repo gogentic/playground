@@ -1,0 +1,40 @@
+services:
+  playground:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playground-app
+    ports:
+      - "127.0.0.1:3080:80"  # Only accessible locally for reverse proxy
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - playground-network
+    labels:
+      - "com.gogentic.project=playground"
+      - "com.gogentic.domain=playground.gogentic.ai"
+
+  # Development service (optional, can be used with docker compose up dev)
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: playground-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - playground-network
+    profiles:
+      - dev
+    command: npm run dev
+
+networks:
+  playground-network:
+    driver: bridge
+    name: playground-net

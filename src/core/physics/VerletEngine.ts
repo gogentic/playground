@@ -174,7 +174,7 @@ export class VerletEngine {
       // Apply bounds
       if (this.config.bounds) {
         this.particles.forEach(particle => {
-          particle.applyBounds(this.config.bounds!.min, this.config.bounds!.max);
+          particle.applyBounds(Vector3.from(this.config.bounds!.min), Vector3.from(this.config.bounds!.max));
         });
       }
     }
@@ -317,7 +317,7 @@ export class VerletEngine {
     // Update spatial hash if bounds changed
     if (config.bounds) {
       const bounds = this.config.bounds!;
-      this.spatialHash = new SpatialHash(bounds.min, bounds.max, 2);
+      this.spatialHash = new SpatialHash(Vector3.from(bounds.min), Vector3.from(bounds.max), 2);
       this.spatialHash.update(this.getParticles());
     }
   }

@@ -6,6 +6,7 @@ import { SceneManager } from './components/scenes/SceneManager'
 import { AuthModal } from './components/auth/AuthModal'
 import { useEngineStore } from './stores/useEngineStore'
 import { useAuthStore } from './stores/useAuthStore'
+import { keyboardShortcuts, matchesShortcut } from './config/keyboardShortcuts'
 import logoPng from './assets/logo.png'
 import './App.css'
 
@@ -16,8 +17,6 @@ function App() {
   const user = useAuthStore((state) => state.user);
   const loading = useAuthStore((state) => state.loading);
   
-  const toggleEditMode = useEngineStore((state) => state.toggleEditMode);
-  const isEditMode = useEngineStore((state) => state.isEditMode);
   const selectAllParticles = useEngineStore((state) => state.selectAllParticles);
   const deleteSelectedParticles = useEngineStore((state) => state.deleteSelectedParticles);
   const clearSelection = useEngineStore((state) => state.clearSelection);
@@ -26,6 +25,12 @@ function App() {
   const redo = useEngineStore((state) => state.redo);
   const canUndo = useEngineStore((state) => state.canUndo);
   const canRedo = useEngineStore((state) => state.canRedo);
+  const setTransformMode = useEngineStore((state) => state.setTransformMode);
+  const isPlaying = useEngineStore((state) => state.isPlaying);
+  const play = useEngineStore((state) => state.play);
+  const pause = useEngineStore((state) => state.pause);
+  const toggleGrid = useEngineStore((state) => state.toggleGrid);
+  const recenterCamera = useEngineStore((state) => state.recenterCamera);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -35,63 +40,88 @@ function App() {
         return;
       }
 
-      // Toggle edit mode with 'E' key
-      if (event.key.toLowerCase() === 'e' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        event.preventDefault();
-        toggleEditMode();
-      }
-      
-      // Save/Load with Ctrl+S
-      if (event.key.toLowerCase() === 's' && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        setShowSceneManager(true);
-      }
-      
-      // Undo/Redo shortcuts (work in both modes)
-      if (event.key.toLowerCase() === 'z' && (event.ctrlKey || event.metaKey)) {
-        if (event.shiftKey) {
-          // Ctrl+Shift+Z or Cmd+Shift+Z: Redo
-          if (canRedo()) {
-            event.preventDefault();
-            redo();
+      // Check each shortcut
+      for (const shortcut of keyboardShortcuts) {
+        if (matchesShortcut(event, shortcut)) {
+          const [action, param] = shortcut.action.split(':');
+          
+          switch (action) {
+              
+            case 'setTransformMode':
+              if (param) {
+                event.preventDefault();
+                setTransformMode(param as 'translate' | 'rotate' | 'scale' | 'grab');
+              }
+              break;
+              
+            case 'deleteSelectedParticles':
+              if (selectedParticleIds.size > 0) {
+                event.preventDefault();
+                deleteSelectedParticles();
+              }
+              break;
+              
+            case 'duplicateSelected':
+              // TODO: Implement duplicate function
+              break;
+              
+            case 'selectAllParticles':
+              event.preventDefault();
+              selectAllParticles();
+              break;
+              
+            case 'clearSelection':
+              event.preventDefault();
+              clearSelection();
+              break;
+              
+            case 'invertSelection':
+              // TODO: Implement invert selection
+              break;
+              
+            case 'undo':
+              if (canUndo()) {
+                event.preventDefault();
+                undo();
+              }
+              break;
+              
+            case 'redo':
+              if (canRedo()) {
+                event.preventDefault();
+                redo();
+              }
+              break;
+              
+            case 'showSceneManager':
+              event.preventDefault();
+              setShowSceneManager(true);
+              break;
+              
+            case 'toggleGrid':
+              event.preventDefault();
+              toggleGrid();
+              break;
+              
+            case 'recenterCamera':
+              event.preventDefault();
+              recenterCamera();
+              break;
+              
+            case 'togglePlayPause':
+              event.preventDefault();
+              if (isPlaying) {
+                pause();
+              } else {
+                play();
+              }
+              break;
           }
-        } else {
-          // Ctrl+Z or Cmd+Z: Undo
-          if (canUndo()) {
-            event.preventDefault();
-            undo();
+          
+          // If we matched a shortcut, don't check others
+          if (matchesShortcut(event, shortcut)) {
+            break;
           }
-        }
-      }
-      
-      // Alternative redo shortcut: Ctrl+Y or Cmd+Y
-      if (event.key.toLowerCase() === 'y' && (event.ctrlKey || event.metaKey)) {
-        if (canRedo()) {
-          event.preventDefault();
-          redo();
-        }
-      }
-      
-      // Multiple selection shortcuts (only in edit mode)
-      if (isEditMode) {
-        // Ctrl+A or Cmd+A: Select all particles
-        if (event.key.toLowerCase() === 'a' && (event.ctrlKey || event.metaKey)) {
-          event.preventDefault();
-          selectAllParticles();
-        }
-        
-        // Delete key: Delete selected particles
-        if (event.key === 'Delete' || event.key === 'Backspace') {
-          if (selectedParticleIds.size > 0) {
-            event.preventDefault();
-            deleteSelectedParticles();
-          }
-        }
-        
-        // Escape: Clear selection
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          clearSelection();
         }
       }
     };
@@ -100,14 +130,25 @@ function App() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [toggleEditMode, isEditMode, selectAllParticles, deleteSelectedParticles, clearSelection, selectedParticleIds, undo, redo, canUndo, canRedo, setShowSceneManager]);
+  }, [selectAllParticles, deleteSelectedParticles, clearSelection, selectedParticleIds, undo, redo, canUndo, canRedo, setTransformMode, setShowSceneManager, isPlaying, play, pause, toggleGrid]);
 
   // Show auth modal if user is not authenticated
   useEffect(() => {
     if (!loading && !user) {
       setShowAuthModal(true);
-    } else {
-      setShowAuthModal(false);
+    } else if (user) {
+      // Check if OAuth user's email is allowed
+      const allowedDomains = ['@gogentic.ai']; // Only allow company domain
+      const userEmail = user.email || '';
+      const isAllowed = allowedDomains.some(domain => userEmail.endsWith(domain));
+      
+      if (!isAllowed) {
+        // Sign out unauthorized users
+        useAuthStore.getState().signOut();
+        alert('Access restricted to authorized email domains only.');
+      } else {
+        setShowAuthModal(false);
+      }
     }
   }, [user, loading]);
 

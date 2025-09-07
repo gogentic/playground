@@ -1,9 +1,12 @@
 import { useFrame } from '@react-three/fiber';
 import { useState, useEffect, Suspense } from 'react';
+import { Vector3 } from 'three';
 import { useEngineStore } from '../../stores/useEngineStore';
 import { ParticleRenderer } from './ParticleRenderer';
 import { ConstraintRenderer } from './ConstraintRenderer';
-import { SafeCompositeBoundingBox } from './SafeCompositeBoundingBox';
+import { CompositeBoundingBox } from './CompositeBoundingBox';
+import { TransformGizmo } from './TransformGizmo';
+import { MultiSelectionIndicator } from './MultiSelectionIndicator';
 import { Ground } from './Ground';
 import { Particle } from '../../core/primitives/Particle';
 import { Constraint } from '../../core/primitives/Constraint';
@@ -16,6 +19,9 @@ export function Scene() {
   const composites = useEngineStore((state) => state.composites);
   const showBoundingBoxes = useEngineStore((state) => state.showBoundingBoxes);
   const dynamicsSystem = useEngineStore((state) => state.dynamicsSystem);
+  const selectedParticleId = useEngineStore((state) => state.selectedParticleId);
+  const selectedParticleIds = useEngineStore((state) => state.selectedParticleIds);
+  const transformMode = useEngineStore((state) => state.transformMode);
   
   // State to force re-renders when particles/constraints change
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -65,6 +71,48 @@ export function Scene() {
 
   // Removed verbose debug logging to prevent performance issues
 
+  // Calculate center position for multi-selected particles or single selected particle
+  // This will update every frame to follow the particles
+  const [gizmoPosition, setGizmoPosition] = useState<Vector3 | null>(null);
+  
+  // Update gizmo position every frame to follow selected particles
+  useFrame(() => {
+    const selectedIds = new Set<string>();
+    
+    // Collect all selected particle IDs
+    if (selectedParticleIds.size > 0) {
+      selectedParticleIds.forEach(id => selectedIds.add(id));
+    } else if (selectedParticleId) {
+      selectedIds.add(selectedParticleId);
+    }
+    
+    if (selectedIds.size === 0) {
+      setGizmoPosition(null);
+      return;
+    }
+    
+    // Calculate center position of all selected particles
+    let centerX = 0, centerY = 0, centerZ = 0;
+    let count = 0;
+    
+    const currentParticles = engine.getParticles();
+    selectedIds.forEach(id => {
+      const particle = currentParticles.find(p => p.id === id);
+      if (particle) {
+        centerX += particle.position.x;
+        centerY += particle.position.y;
+        centerZ += particle.position.z;
+        count++;
+      }
+    });
+    
+    if (count > 0) {
+      setGizmoPosition(new Vector3(centerX / count, centerY / count, centerZ / count));
+    } else {
+      setGizmoPosition(null);
+    }
+  });
+
   return (
     <>
       <Ground />
@@ -74,11 +122,17 @@ export function Scene() {
       {constraints.map((constraint) => (
         <ConstraintRenderer key={constraint.id} constraint={constraint} />
       ))}
+      {/* Render multi-selection indicator */}
+      <MultiSelectionIndicator />
+      {/* Render transform gizmo for selected particles */}
+      {transformMode && gizmoPosition && (
+        <TransformGizmo position={gizmoPosition} />
+      )}
       {/* Render bounding boxes for all composites */}
       {showBoundingBoxes && composites && composites.size > 0 && (
         <Suspense fallback={null}>
           {Array.from(composites.values()).map((composite) => (
-            <SafeCompositeBoundingBox key={composite.id} composite={composite} />
+            <CompositeBoundingBox key={composite.id} composite={composite} />
           ))}
         </Suspense>
       )}

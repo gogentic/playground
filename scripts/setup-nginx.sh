@@ -5,7 +5,7 @@
 echo "Setting up NGINX configuration for playground.gogentic.ai..."
 
 # Copy the config file
-sudo cp /home/ira/dev/protobyte-studio/nginx-playground.conf /etc/nginx/sites-available/playground.gogentic.ai
+sudo cp /home/ira/dev/PLAYGROUND/scripts/nginx-playground.conf /etc/nginx/sites-available/playground.gogentic.ai
 
 # Create symbolic link to enable the site
 sudo ln -s /etc/nginx/sites-available/playground.gogentic.ai /etc/nginx/sites-enabled/

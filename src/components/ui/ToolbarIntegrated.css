@@ -83,7 +83,7 @@
 
 .toolbar-integrated .panel-content {
   padding: 0;
-  padding-bottom: 140px; /* Space for stats section */
+  padding-bottom: 320px; /* Space for properties and stats sections */
   height: 100%;
   overflow-y: auto;
 }
@@ -132,6 +132,19 @@
 .section-content {
   padding: 6px;
   background: #2a2a2a;
+}
+
+/* Object categories */
+.object-category {
+  margin-bottom: 0;
+}
+
+.category-icon {
+  font-size: 12px;
+}
+
+.category-name {
+  font-weight: 600;
 }
 
 /* Tool buttons */
@@ -291,6 +304,45 @@
   background: #505050;
 }
 
+/* Properties Section - Docked above stats */
+.properties-section {
+  position: absolute;
+  bottom: 120px; /* Position above stats */
+  left: 0;
+  right: 0;
+  background: #242424;
+  border-top: 1px solid #1a1a1a;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.properties-section .section-header {
+  padding: 4px 10px;
+  background: #1f1f1f;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.properties-section .section-title {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #808080;
+}
+
+.properties-content {
+  padding: 6px 10px;
+}
+
+.properties-content .no-selection {
+  color: #606060;
+  font-size: 10px;
+  text-align: center;
+  padding: 12px 0;
+}
+
 /* Statistics Section - Docked at bottom */
 .stats-section {
   position: absolute;
@@ -385,6 +437,93 @@
 
 .tool-btn.clear-btn:hover {
   background: #757575;
+}
+
+.tool-btn.delete-btn {
+  background: #5a3030;
+  border-color: #6a4040;
+}
+
+.tool-btn.delete-btn:hover {
+  background: #6a4040;
+  border-color: #ff6b6b;
+}
+
+/* Transform mode controls */
+.transform-modes {
+  margin-bottom: 12px;
+}
+
+.mode-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #808080;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.mode-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 2px;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  color: #808080;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 9px;
+  transition: all 0.1s;
+  min-height: 40px;
+}
+
+.mode-btn:hover:not(:disabled) {
+  background: #333;
+  border-color: #4dabf7;
+  color: #d0d0d0;
+}
+
+.mode-btn.active {
+  background: #4dabf7;
+  border-color: #5fc3ff;
+  color: #fff;
+}
+
+.mode-btn.active:hover {
+  background: #5fc3ff;
+}
+
+.mode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mode-icon {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.mode-text {
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.edit-separator {
+  height: 1px;
+  background: #3a3a3a;
+  margin: 8px 0;
+}
+
+.edit-actions {
+  margin-bottom: 8px;
 }
 
 .active-behaviors {
