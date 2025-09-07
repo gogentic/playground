@@ -66,6 +66,11 @@ interface EngineState {
   isDragging: boolean;
   draggedParticleId: string | null;
   dragStartSnapshot?: EngineSnapshot;
+  isPotentialDragTarget: boolean;
+  
+  // Transform mode state
+  transformMode: 'translate' | 'rotate' | 'scale' | 'grab';
+  transformPivot: IVector3 | null;
   
   // Multiple selection state
   selectedParticleIds: Set<string>;
@@ -95,6 +100,11 @@ interface EngineState {
   updateParticlePosition: (particleId: string, position: IVector3) => void;
   updateMultipleParticlePositions: (particleId: string, deltaPosition: IVector3) => void;
   
+  // Transform mode actions
+  setTransformMode: (mode: 'translate' | 'rotate' | 'scale' | 'grab') => void;
+  setTransformPivot: (pivot: IVector3 | null) => void;
+  setIsPotentialDragTarget: (value: boolean) => void;
+  
   // Entity management
   addParticle: (particle: Particle) => void;
   removeParticle: (id: string) => void;
@@ -102,6 +112,7 @@ interface EngineState {
   removeConstraint: (id: string) => void;
   addComposite: (composite: Composite) => void;
   getCompositeByParticleId: (particleId: string) => Composite | null;
+  updateParticleProperties: (particleId: string, properties: Partial<{color: string, mass: number, radius: number, damping: number, fixed: boolean}>) => void;
   
   // Selection
   selectParticle: (id: string | null) => void;
@@ -130,6 +141,11 @@ interface EngineState {
   toggleObjectProperties: () => void;
   toggleEnvironmental: () => void;
   toggleBoundingBoxes: () => void;
+  
+  // Camera control
+  cameraTarget: { x: number; y: number; z: number } | null;
+  setCameraTarget: (target: { x: number; y: number; z: number } | null) => void;
+  recenterCamera: () => void;
   
   // Constraint creation
   startConstraintCreation: (particleId: string) => void;
@@ -171,6 +187,9 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   isEditMode: false,
   isDragging: false,
   draggedParticleId: null,
+  transformMode: 'translate',
+  isPotentialDragTarget: false,
+  transformPivot: null,
   
   // Multiple selection state
   selectedParticleIds: new Set(),
@@ -184,6 +203,9 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   // Constraint creation state
   isCreatingConstraint: false,
   constraintStartParticleId: null,
+  
+  // Camera state
+  cameraTarget: null,
   
   play: () => {
     const { engine } = get();
@@ -231,6 +253,30 @@ export const useEngineStore = create<EngineState>((set, get) => ({
     engine.removeParticle(id);
     if (selectedParticleId === id) {
       set({ selectedParticleId: null });
+    }
+  },
+  
+  updateParticleProperties: (particleId, properties) => {
+    const { engine } = get();
+    const particles = engine.getParticles();
+    const particle = particles.find(p => p.id === particleId);
+    
+    if (particle) {
+      // Update the particle properties
+      if (properties.color !== undefined) particle.color = properties.color;
+      if (properties.mass !== undefined) particle.mass = properties.mass;
+      if (properties.radius !== undefined) particle.radius = properties.radius;
+      if (properties.damping !== undefined) particle.damping = properties.damping;
+      if (properties.fixed !== undefined) particle.fixed = properties.fixed;
+      
+      // Force a state update to trigger re-renders
+      // We update a dummy state value to force React to re-render components
+      set((state) => ({
+        ...state,
+        // Trigger re-render by updating the engine reference
+        // This is a workaround to force React to see the change
+        engine: Object.assign(Object.create(Object.getPrototypeOf(state.engine)), state.engine)
+      }));
     }
   },
   
@@ -303,13 +349,11 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   },
   
   selectParticle: (id) => {
-    console.log('Store: selectParticle called with:', id);
     set({ 
       selectedParticleId: id,
       selectedConstraintId: null,
       selectedCompositeId: null,  // This already clears composite selection
     });
-    console.log('Store: selectedParticleId after set:', get().selectedParticleId);
   },
   
   selectConstraint: (id) => set({ 
@@ -397,6 +441,60 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   toggleObjectProperties: () => set((state) => ({ showObjectProperties: !state.showObjectProperties })),
   toggleEnvironmental: () => set((state) => ({ showEnvironmental: !state.showEnvironmental })),
   toggleBoundingBoxes: () => set((state) => ({ showBoundingBoxes: !state.showBoundingBoxes })),
+  
+  setCameraTarget: (target) => set({ cameraTarget: target }),
+  
+  recenterCamera: () => {
+    const { selectedParticleId, selectedParticleIds, engine } = get();
+    const particles = engine.getParticles();
+    
+    // Calculate center of selected particles or all particles
+    let centerX = 0, centerY = 0, centerZ = 0;
+    let count = 0;
+    
+    if (selectedParticleIds.size > 0) {
+      // Center on multi-selected particles
+      selectedParticleIds.forEach(id => {
+        const particle = particles.find(p => p.id === id);
+        if (particle) {
+          centerX += particle.position.x;
+          centerY += particle.position.y;
+          centerZ += particle.position.z;
+          count++;
+        }
+      });
+    } else if (selectedParticleId) {
+      // Center on single selected particle
+      const particle = particles.find(p => p.id === selectedParticleId);
+      if (particle) {
+        centerX = particle.position.x;
+        centerY = particle.position.y;
+        centerZ = particle.position.z;
+        count = 1;
+      }
+    } else if (particles.length > 0) {
+      // Center on all particles
+      particles.forEach(particle => {
+        centerX += particle.position.x;
+        centerY += particle.position.y;
+        centerZ += particle.position.z;
+        count++;
+      });
+    }
+    
+    if (count > 0) {
+      set({ 
+        cameraTarget: { 
+          x: centerX / count, 
+          y: centerY / count, 
+          z: centerZ / count 
+        } 
+      });
+    } else {
+      // Default to origin if no particles
+      set({ cameraTarget: { x: 0, y: 0, z: 0 } });
+    }
+  },
   
   // Constraint creation actions
   startConstraintCreation: (particleId) => set({
@@ -604,9 +702,20 @@ export const useEngineStore = create<EngineState>((set, get) => ({
     });
   },
   
+  setTransformMode: (mode) => {
+    set({ transformMode: mode });
+  },
+  
+  setTransformPivot: (pivot) => {
+    set({ transformPivot: pivot });
+  },
+  
+  setIsPotentialDragTarget: (value) => {
+    set({ isPotentialDragTarget: value });
+  },
+  
   startDragging: (particleId) => {
-    const { isEditMode, createSnapshot } = get();
-    if (!isEditMode) return;
+    const { createSnapshot } = get();
     
     // Create snapshot before dragging starts
     const beforeSnapshot = createSnapshot();
@@ -644,8 +753,8 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   },
   
   updateParticlePosition: (particleId, position) => {
-    const { engine, isEditMode, isDragging } = get();
-    if (!isEditMode || !isDragging) return;
+    const { engine, isDragging } = get();
+    if (!isDragging) return;
     
     const particle = engine.getParticle(particleId);
     if (particle) {
@@ -660,8 +769,8 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   },
 
   updateMultipleParticlePositions: (draggedParticleId, deltaPosition) => {
-    const { engine, isEditMode, isDragging, selectedParticleIds, isMultiSelecting } = get();
-    if (!isEditMode || !isDragging) return;
+    const { engine, isDragging, selectedParticleIds, isMultiSelecting } = get();
+    if (!isDragging) return;
 
     // If we're multi-selecting and the dragged particle is in the selection, move all selected particles
     if (isMultiSelecting && selectedParticleIds.has(draggedParticleId)) {
