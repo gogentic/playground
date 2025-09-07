@@ -1,5 +1,5 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from 'react';
-import { Mesh, SphereGeometry, MeshStandardMaterial, Vector3 as ThreeVector3, Raycaster, Plane, Vector2, RingGeometry, MeshBasicMaterial, DoubleSide } from 'three';
+import { Mesh, SphereGeometry, MeshStandardMaterial, Vector3 as ThreeVector3, Raycaster, Plane, Vector2 } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Particle } from '../../core/primitives/Particle';
 import { useEngineStore } from '../../stores/useEngineStore';
@@ -92,15 +92,12 @@ export function ParticleRenderer({ particle }: ParticleRendererProps) {
       emissiveIntensity = 0.35;
       metalness = 0.25;
     } else if (isMultiSelected) {
-      emissiveColor = '#ffd700'; // Gold for multi-selected
-      emissiveIntensity = 0.5;
-      metalness = 0.4;
-      roughness = 0.5;
-    } else if (isSelected) {
-      emissiveColor = '#ff6b6b'; // Red for single selected
+      emissiveColor = '#ff9500'; // Orange for multi-selected
       emissiveIntensity = 0.4;
-      metalness = 0.3;
-      roughness = 0.6;
+      metalness = 0.2;
+    } else if (isSelected) {
+      emissiveColor = '#ff6b6b'; // Red for selected
+      emissiveIntensity = 0.3;
     } else if (isEditMode) {
       // Subtle highlight in edit mode to show particles are draggable
       emissiveColor = '#ffffff';
@@ -460,47 +457,20 @@ export function ParticleRenderer({ particle }: ParticleRendererProps) {
     }
   };
 
-  // Create selection ring for multi-selected particles
-  const ringGeometry = useMemo(() => {
-    const inner = 1.2;
-    const outer = 1.4;
-    return new RingGeometry(inner, outer, 32);
-  }, []);
-  
-  const ringMaterial = useMemo(() => {
-    return new MeshBasicMaterial({
-      color: isMultiSelected ? '#ffd700' : '#ff6b6b', // Gold for multi, red for single
-      side: DoubleSide,
-      transparent: true,
-      opacity: 0.8
-    });
-  }, [isMultiSelected]);
-
   return (
-    <group position={[particle.position.x, particle.position.y, particle.position.z]}>
-      <mesh
-        ref={meshRef}
-        scale={[particle.radius, particle.radius, particle.radius]}
-        geometry={geometry}
-        material={material}
-        castShadow
-        receiveShadow
-        onClick={handleClick}
-        onDoubleClick={handleDoubleClick}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        onPointerDown={handlePointerDown}
-      />
-      {/* Selection ring that always faces camera */}
-      {(isSelected || isMultiSelected) && !isBeingDragged && (
-        <mesh
-          geometry={ringGeometry}
-          material={ringMaterial}
-          scale={[particle.radius, particle.radius, 1]}
-          rotation={[Math.PI / 2, 0, 0]} // Face up
-          position={[0, -particle.radius * 1.1, 0]} // Position below particle
-        />
-      )}
-    </group>
+    <mesh
+      ref={meshRef}
+      position={[particle.position.x, particle.position.y, particle.position.z]}
+      scale={[particle.radius, particle.radius, particle.radius]}
+      geometry={geometry}
+      material={material}
+      castShadow
+      receiveShadow
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      onPointerDown={handlePointerDown}
+    />
   );
 }

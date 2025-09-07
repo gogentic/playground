@@ -6,7 +6,6 @@ import { ParticleRenderer } from './ParticleRenderer';
 import { ConstraintRenderer } from './ConstraintRenderer';
 import { CompositeBoundingBox } from './CompositeBoundingBox';
 import { TransformGizmo } from './TransformGizmo';
-import { MultiSelectionIndicator } from './MultiSelectionIndicator';
 import { Ground } from './Ground';
 import { Particle } from '../../core/primitives/Particle';
 import { Constraint } from '../../core/primitives/Constraint';
@@ -122,8 +121,6 @@ export function Scene() {
       {constraints.map((constraint) => (
         <ConstraintRenderer key={constraint.id} constraint={constraint} />
       ))}
-      {/* Render multi-selection indicator */}
-      <MultiSelectionIndicator />
       {/* Render transform gizmo for selected particles */}
       {transformMode && gizmoPosition && (
         <TransformGizmo position={gizmoPosition} />
