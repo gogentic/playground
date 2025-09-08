@@ -142,6 +142,32 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
     action: 'togglePlayPause',
     description: 'Play/Pause simulation',
     category: 'view'
+  },
+  
+  // Viewport layout shortcuts
+  {
+    key: '1',
+    action: 'setViewportMode:single',
+    description: 'Single viewport',
+    category: 'view'
+  },
+  {
+    key: '2',
+    action: 'setViewportMode:split',
+    description: 'Split viewport (2 views)',
+    category: 'view'
+  },
+  {
+    key: '3',
+    action: 'setViewportMode:triple',
+    description: 'Triple viewport (3 views)',
+    category: 'view'
+  },
+  {
+    key: '4',
+    action: 'setViewportMode:quad',
+    description: 'Quad viewport (4 views)',
+    category: 'view'
   }
 ];
 

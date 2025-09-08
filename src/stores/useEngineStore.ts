@@ -72,6 +72,10 @@ interface EngineState {
   fogColor: string;
   showSceneLight: boolean;
   
+  // Viewport settings
+  viewportMode: 'single' | 'split' | 'triple' | 'quad';
+  activeViewport: number;
+  
   // Edit mode state
   isEditMode: boolean;
   isDragging: boolean;
@@ -164,6 +168,10 @@ interface EngineState {
   setFogColor: (color: string) => void;
   toggleSceneLight: () => void;
   
+  // Viewport actions
+  setViewportMode: (mode: 'single' | 'split' | 'triple' | 'quad') => void;
+  setActiveViewport: (viewport: number) => void;
+  
   // Camera control
   cameraTarget: { x: number; y: number; z: number } | null;
   setCameraTarget: (target: { x: number; y: number; z: number } | null) => void;
@@ -215,6 +223,10 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   fogDensity: 0.01,
   fogColor: '#000000',
   showSceneLight: true,
+  
+  // Viewport defaults
+  viewportMode: 'single',
+  activeViewport: 0,
   
   // Edit mode state
   isEditMode: false,
@@ -930,6 +942,15 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   
   toggleSceneLight: () => {
     set((state) => ({ showSceneLight: !state.showSceneLight }));
+  },
+  
+  // Viewport actions
+  setViewportMode: (mode) => {
+    set({ viewportMode: mode });
+  },
+  
+  setActiveViewport: (viewport) => {
+    set({ activeViewport: viewport });
   },
 }));
 

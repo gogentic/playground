@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Viewport } from './components/viewport/Viewport'
+import { ViewportLayout } from './components/viewport/ViewportLayout'
 import { ToolbarIntegrated } from './components/ui/ToolbarIntegrated'
 import { TopMenuBar } from './components/ui/TopMenuBar'
 import { SceneManager } from './components/scenes/SceneManager'
@@ -181,7 +181,7 @@ function App() {
       <div className="app">
         <TopMenuBar />
         <ToolbarIntegrated />
-        <Viewport />
+        <ViewportLayout />
         <div className="logo-container">
           <img src={logoPng} alt="Protobyte Logo" className="logo" />
           <span className="logo-text">Playground</span>

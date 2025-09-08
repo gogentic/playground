@@ -1,12 +1,30 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid } from '@react-three/drei';
+import { OrbitControls, OrthographicCamera, PerspectiveCamera, Grid } from '@react-three/drei';
 import { Scene } from './Scene';
 import { useEngineStore } from '../../stores/useEngineStore';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { Vector3 } from 'three';
+import type { CameraView } from './ViewportLayout';
 
-export function Viewport() {
+interface ViewportProps {
+  viewportId?: number;
+  cameraView?: CameraView;
+  isActive?: boolean;
+}
+
+// Camera position presets for different views
+const CAMERA_PRESETS: Record<CameraView, { position: [number, number, number]; target?: [number, number, number] }> = {
+  perspective: { position: [20, 15, 20] },
+  front: { position: [0, 0, 30], target: [0, 0, 0] },
+  back: { position: [0, 0, -30], target: [0, 0, 0] },
+  left: { position: [-30, 0, 0], target: [0, 0, 0] },
+  right: { position: [30, 0, 0], target: [0, 0, 0] },
+  top: { position: [0, 30, 0], target: [0, 0, 0] },
+  bottom: { position: [0, -30, 0], target: [0, 0, 0] }
+};
+
+export function Viewport({ viewportId = 0, cameraView = 'perspective', isActive = true }: ViewportProps) {
   const showGrid = useEngineStore((state) => state.showGrid);
   const isCreatingConstraint = useEngineStore((state) => state.isCreatingConstraint);
   const cancelConstraintCreation = useEngineStore((state) => state.cancelConstraintCreation);
@@ -32,8 +50,14 @@ export function Viewport() {
   const gridColor = useEngineStore((state) => state.gridColor);
   
   const controlsRef = useRef<any>(null);
-
-
+  
+  // Determine if this is an orthographic view
+  const isOrthographic = cameraView !== 'perspective';
+  const cameraPreset = CAMERA_PRESETS[cameraView];
+  
+  // Calculate orthographic camera parameters
+  const orthographicScale = 20;
+  
   // Handle camera target changes
   useEffect(() => {
     if (cameraTarget && controlsRef.current) {
@@ -89,33 +113,54 @@ export function Viewport() {
         </div>
       )}
       <Canvas
-        camera={{ 
-          position: [20, 15, 20], 
-          fov: 60,
-          near: 0.1,
-          far: 1000
-        }}
         shadows
-        onCreated={({ gl }) => {
+        onCreated={({ gl, camera }) => {
           gl.shadowMap.enabled = true;
+          // Set initial camera position based on preset
+          if (cameraPreset) {
+            camera.position.set(...cameraPreset.position);
+            if (cameraPreset.target && controlsRef.current) {
+              controlsRef.current.target.set(...cameraPreset.target);
+            }
+          }
         }}
         onPointerMissed={() => {
           // Clear selection when clicking on empty space
-          if (!isDragging) {
+          if (!isDragging && isActive) {
             clearSelection();
           }
         }}
       >
+        {/* Camera setup based on view type */}
+        {isOrthographic ? (
+          <OrthographicCamera
+            makeDefault
+            position={cameraPreset.position}
+            zoom={40}
+            near={0.1}
+            far={1000}
+          />
+        ) : (
+          <PerspectiveCamera
+            makeDefault
+            position={cameraPreset.position}
+            fov={60}
+            near={0.1}
+            far={1000}
+          />
+        )}
+        
         <color attach="background" args={[backgroundColor]} />
         
         <OrbitControls
           ref={controlsRef}
-          enablePan={!isDragging}
-          enableZoom={!isDragging}
-          enableRotate={!isDragging}
+          enablePan={!isDragging && isActive}
+          enableZoom={!isDragging && isActive}
+          enableRotate={!isDragging && isActive && cameraView === 'perspective'}
           zoomSpeed={0.5}
           panSpeed={0.5}
           rotateSpeed={0.5}
+          target={cameraPreset.target ? new Vector3(...cameraPreset.target) : new Vector3(0, 0, 0)}
         />
         
         {showGrid && (
