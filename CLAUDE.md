@@ -158,12 +158,29 @@ playground/
 - Automatic session persistence
 - Unauthorized user rejection
 
+#### Scene Management
+- Complete scene save/load functionality via Supabase
+- Captures all particles, constraints, composites
+- Saves dynamic behaviors (oscillators, attractors, etc.)
+- Preserves all visual settings (colors, fog, lighting)
+- Maintains view preferences and UI state
+- User-specific scene storage with Row Level Security
+
 #### Physics Simulation
 - Real-time 60 FPS Verlet integration
 - Configurable gravity, time scaling, damping
 - Ground collision with bounce and friction
 - Spatial hash optimization for large particle counts
 - Environmental parameter controls
+
+#### Dynamic Behaviors
+- **Oscillator**: Sinusoidal motion along selectable axis (X/Y/Z)
+- **Pulsar**: Periodic force impulses
+- **Attractor**: Pull nearby particles
+- **Repulsor**: Push away particles
+- **Vortex**: Swirling motion around axis
+- **Noise**: Random jitter
+- **Wave**: Traveling wave effects
 
 #### Interactive Tools
 - Edit mode with physics pause
@@ -179,6 +196,15 @@ playground/
 - Cloth creation with configurable resolution (up to 50x50)
 - Box frame structures
 - Composite object management
+
+#### Global Visual Settings (Environment → Globals)
+- Particle radius multiplier (0.1x - 3x)
+- Particle visibility toggle
+- Transform gizmo visibility
+- Background color customization
+- Grid color customization
+- Scene lighting toggle
+- Fog effects with density and color controls
 
 #### Visual Features
 - Color-coded particle states (selected, dragging, constraint creation)
@@ -306,7 +332,11 @@ The project has a `.claude/settings.local.json` file with permissions for:
 - Use Zustand store for all state management, avoid local state where possible
 - Implement keyboard shortcuts following the existing pattern in App.tsx
 
-### Recent UI Changes
+### Recent Changes
+- **Scene Saving**: Complete state capture including dynamics, visual settings, and metadata
+- **Global Settings**: Moved to Environment → Globals section in toolbar
+- **Oscillator Improvements**: Axis selector (X/Y/Z) and amplitude steps of 0.01
+- **Visual Controls**: Comprehensive settings for fog, lighting, colors, particle size
 - **Logo kerning**: PLAYGROUND text letter-spacing increased to 4px
 - **Toolbar simplified**: Removed "Tools" submenu header, starts directly with "Create"
 - **Authentication wall**: Application requires sign-in before access
