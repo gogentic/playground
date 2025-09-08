@@ -22,6 +22,14 @@ export function Scene() {
   const selectedParticleIds = useEngineStore((state) => state.selectedParticleIds);
   const transformMode = useEngineStore((state) => state.transformMode);
   
+  // Global visual settings
+  const showParticles = useEngineStore((state) => state.showParticles);
+  const showTransformGizmo = useEngineStore((state) => state.showTransformGizmo);
+  const showFog = useEngineStore((state) => state.showFog);
+  const fogDensity = useEngineStore((state) => state.fogDensity);
+  const fogColor = useEngineStore((state) => state.fogColor);
+  const showSceneLight = useEngineStore((state) => state.showSceneLight);
+  
   // State to force re-renders when particles/constraints change
   const [particles, setParticles] = useState<Particle[]>([]);
   const [constraints, setConstraints] = useState<Constraint[]>([]);
@@ -114,17 +122,33 @@ export function Scene() {
 
   return (
     <>
+      {/* Scene lighting */}
+      {showSceneLight && (
+        <>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+        </>
+      )}
+      
+      {/* Fog effect */}
+      {showFog && <fog attach="fog" args={[fogColor, 5, 100 / fogDensity]} />}
+      
       <Ground />
-      {particles.map((particle) => (
+      
+      {/* Render particles only if visible */}
+      {showParticles && particles.map((particle) => (
         <ParticleRenderer key={particle.id} particle={particle} />
       ))}
+      
       {constraints.map((constraint) => (
         <ConstraintRenderer key={constraint.id} constraint={constraint} />
       ))}
+      
       {/* Render transform gizmo for selected particles */}
-      {transformMode && gizmoPosition && (
+      {showTransformGizmo && transformMode && gizmoPosition && (
         <TransformGizmo position={gizmoPosition} />
       )}
+      
       {/* Render bounding boxes for all composites */}
       {showBoundingBoxes && composites && composites.size > 0 && (
         <Suspense fallback={null}>

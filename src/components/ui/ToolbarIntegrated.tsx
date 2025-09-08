@@ -21,6 +21,7 @@ export function ToolbarIntegrated() {
   const [dynamicFrequency, setDynamicFrequency] = useState(1);
   const [dynamicStrength, setDynamicStrength] = useState(1);
   const [dynamicRadius, setDynamicRadius] = useState(10);
+  const [oscillatorAxis, setOscillatorAxis] = useState<'x' | 'y' | 'z'>('y');
   
   // Object template controls state
   const [templateParams, setTemplateParams] = useState<Record<string, any>>({
@@ -68,7 +69,26 @@ export function ToolbarIntegrated() {
     selectAllParticles,
     updateParticleProperties,
     transformMode,
-    setTransformMode
+    setTransformMode,
+    // Global visual settings
+    particleRadiusMultiplier,
+    showParticles,
+    showTransformGizmo,
+    backgroundColor,
+    gridColor,
+    showFog,
+    fogDensity,
+    fogColor,
+    showSceneLight,
+    setParticleRadiusMultiplier,
+    toggleParticles,
+    toggleTransformGizmo,
+    setBackgroundColor,
+    setGridColor,
+    toggleFog,
+    setFogDensity,
+    setFogColor,
+    toggleSceneLight
   } = useEngineStore();
 
   // Initialize from engine
@@ -391,7 +411,7 @@ export function ToolbarIntegrated() {
                     <label>Amplitude</label>
                     <input 
                       type="number" 
-                      step="0.1"
+                      step="0.01"
                       value={dynamicAmplitude}
                       onChange={(e) => setDynamicAmplitude(Number(e.target.value))}
                     />
@@ -406,6 +426,23 @@ export function ToolbarIntegrated() {
                       onChange={(e) => setDynamicFrequency(Number(e.target.value))}
                     />
                   </div>
+                  
+                  {(selectedDynamicType === DynamicType.OSCILLATOR || 
+                    selectedDynamicType === DynamicType.WAVE || 
+                    selectedDynamicType === DynamicType.VORTEX) && (
+                    <div className="property-group">
+                      <label>Axis</label>
+                      <select 
+                        value={oscillatorAxis}
+                        onChange={(e) => setOscillatorAxis(e.target.value as 'x' | 'y' | 'z')}
+                        className="dynamic-select"
+                      >
+                        <option value="x">X Axis</option>
+                        <option value="y">Y Axis</option>
+                        <option value="z">Z Axis</option>
+                      </select>
+                    </div>
+                  )}
                   
                   {(selectedDynamicType === DynamicType.ATTRACTOR || 
                     selectedDynamicType === DynamicType.REPULSOR ||
@@ -437,6 +474,9 @@ export function ToolbarIntegrated() {
                       onClick={() => {
                         selectedParticles.forEach(particle => {
                           if (particle) {
+                            const axisVector = oscillatorAxis === 'x' ? new Vector3(1, 0, 0) :
+                                              oscillatorAxis === 'y' ? new Vector3(0, 1, 0) :
+                                              new Vector3(0, 0, 1);
                             const behavior = {
                               type: selectedDynamicType,
                               enabled: true,
@@ -445,7 +485,7 @@ export function ToolbarIntegrated() {
                               phase: 0,
                               strength: dynamicStrength,
                               radius: dynamicRadius,
-                              axis: new Vector3(0, 1, 0),
+                              axis: axisVector,
                               center: particle.position.clone()
                             };
                             addDynamicBehavior(particle.id, behavior);
@@ -647,6 +687,126 @@ export function ToolbarIntegrated() {
                   Composite Bounds
                 </label>
               </div>
+              
+              {/* Global Visual Settings */}
+              <div style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #3a3a3a'}}>
+                <div style={{fontSize: '10px', color: '#888', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Globals</div>
+                
+                {/* Particle Settings */}
+                <div className="property-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={showParticles}
+                      onChange={toggleParticles}
+                    />
+                    Show Particles
+                  </label>
+                </div>
+                
+                <div className="property-group">
+                  <label>Particle Size</label>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="3"
+                      step="0.1"
+                      value={particleRadiusMultiplier}
+                      onChange={(e) => setParticleRadiusMultiplier(Number(e.target.value))}
+                      style={{flex: 1}}
+                    />
+                    <span style={{fontSize: '10px', color: '#888', minWidth: '30px'}}>{particleRadiusMultiplier.toFixed(1)}x</span>
+                  </div>
+                </div>
+                
+                {/* Transform Settings */}
+                <div className="property-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={showTransformGizmo}
+                      onChange={toggleTransformGizmo}
+                    />
+                    Transform Arrows
+                  </label>
+                </div>
+                
+                {/* Scene Settings */}
+                <div className="property-group">
+                  <label>Background</label>
+                  <input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    style={{width: '60px', height: '24px'}}
+                  />
+                </div>
+                
+                <div className="property-group">
+                  <label>Grid Color</label>
+                  <input
+                    type="color"
+                    value={gridColor}
+                    onChange={(e) => setGridColor(e.target.value)}
+                    style={{width: '60px', height: '24px'}}
+                  />
+                </div>
+                
+                <div className="property-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={showSceneLight}
+                      onChange={toggleSceneLight}
+                    />
+                    Scene Lighting
+                  </label>
+                </div>
+                
+                {/* Fog Settings */}
+                <div className="property-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={showFog}
+                      onChange={toggleFog}
+                    />
+                    Enable Fog
+                  </label>
+                </div>
+                
+                {showFog && (
+                  <>
+                    <div className="property-group">
+                      <label>Fog Density</label>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <input
+                          type="range"
+                          min="0.001"
+                          max="0.1"
+                          step="0.001"
+                          value={fogDensity}
+                          onChange={(e) => setFogDensity(Number(e.target.value))}
+                          style={{flex: 1}}
+                        />
+                        <span style={{fontSize: '10px', color: '#888', minWidth: '40px'}}>{fogDensity.toFixed(3)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="property-group">
+                      <label>Fog Color</label>
+                      <input
+                        type="color"
+                        value={fogColor}
+                        onChange={(e) => setFogColor(e.target.value)}
+                        style={{width: '60px', height: '24px'}}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+              
               <div style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #3a3a3a'}}>
                 <button 
                   onClick={() => resetSimulation()} 

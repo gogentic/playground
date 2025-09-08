@@ -61,6 +61,17 @@ interface EngineState {
   showEnvironmental: boolean;
   showBoundingBoxes: boolean;
   
+  // Global visual settings
+  particleRadiusMultiplier: number;
+  showParticles: boolean;
+  showTransformGizmo: boolean;
+  backgroundColor: string;
+  gridColor: string;
+  showFog: boolean;
+  fogDensity: number;
+  fogColor: string;
+  showSceneLight: boolean;
+  
   // Edit mode state
   isEditMode: boolean;
   isDragging: boolean;
@@ -142,6 +153,17 @@ interface EngineState {
   toggleEnvironmental: () => void;
   toggleBoundingBoxes: () => void;
   
+  // Global visual settings actions
+  setParticleRadiusMultiplier: (multiplier: number) => void;
+  toggleParticles: () => void;
+  toggleTransformGizmo: () => void;
+  setBackgroundColor: (color: string) => void;
+  setGridColor: (color: string) => void;
+  toggleFog: () => void;
+  setFogDensity: (density: number) => void;
+  setFogColor: (color: string) => void;
+  toggleSceneLight: () => void;
+  
   // Camera control
   cameraTarget: { x: number; y: number; z: number } | null;
   setCameraTarget: (target: { x: number; y: number; z: number } | null) => void;
@@ -182,6 +204,17 @@ export const useEngineStore = create<EngineState>((set, get) => ({
   showObjectProperties: true,
   showEnvironmental: true,
   showBoundingBoxes: true,
+  
+  // Global visual settings defaults
+  particleRadiusMultiplier: 1.0,
+  showParticles: true,
+  showTransformGizmo: true,
+  backgroundColor: '#1a1a2e',
+  gridColor: '#404040',
+  showFog: false,
+  fogDensity: 0.01,
+  fogColor: '#000000',
+  showSceneLight: true,
   
   // Edit mode state
   isEditMode: false,
@@ -860,6 +893,43 @@ export const useEngineStore = create<EngineState>((set, get) => ({
       isCreatingConstraint: false,
       constraintStartParticleId: null,
     });
+  },
+  
+  // Global visual settings actions
+  setParticleRadiusMultiplier: (multiplier) => {
+    set({ particleRadiusMultiplier: multiplier });
+  },
+  
+  toggleParticles: () => {
+    set((state) => ({ showParticles: !state.showParticles }));
+  },
+  
+  toggleTransformGizmo: () => {
+    set((state) => ({ showTransformGizmo: !state.showTransformGizmo }));
+  },
+  
+  setBackgroundColor: (color) => {
+    set({ backgroundColor: color });
+  },
+  
+  setGridColor: (color) => {
+    set({ gridColor: color });
+  },
+  
+  toggleFog: () => {
+    set((state) => ({ showFog: !state.showFog }));
+  },
+  
+  setFogDensity: (density) => {
+    set({ fogDensity: density });
+  },
+  
+  setFogColor: (color) => {
+    set({ fogColor: color });
+  },
+  
+  toggleSceneLight: () => {
+    set((state) => ({ showSceneLight: !state.showSceneLight }));
   },
 }));
 

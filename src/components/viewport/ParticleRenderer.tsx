@@ -18,6 +18,9 @@ export function ParticleRenderer({ particle }: ParticleRendererProps) {
   const selectParticle = useEngineStore((state) => state.selectParticle);
   const selectComposite = useEngineStore((state) => state.selectComposite);
   
+  // Global visual settings
+  const particleRadiusMultiplier = useEngineStore((state) => state.particleRadiusMultiplier);
+  
   const getCompositeByParticleId = useEngineStore((state) => state.getCompositeByParticleId);
   const isCreatingConstraint = useEngineStore((state) => state.isCreatingConstraint);
   const constraintStartParticleId = useEngineStore((state) => state.constraintStartParticleId);
@@ -380,8 +383,8 @@ export function ParticleRenderer({ particle }: ParticleRendererProps) {
         particle.position.z
       );
       
-      // Update scale if radius changed
-      const scale = particle.radius;
+      // Update scale if radius changed, applying global multiplier
+      const scale = particle.radius * particleRadiusMultiplier;
       meshRef.current.scale.set(scale, scale, scale);
     }
   });
@@ -457,11 +460,13 @@ export function ParticleRenderer({ particle }: ParticleRendererProps) {
     }
   };
 
+  const displayRadius = particle.radius * particleRadiusMultiplier;
+  
   return (
     <mesh
       ref={meshRef}
       position={[particle.position.x, particle.position.y, particle.position.z]}
-      scale={[particle.radius, particle.radius, particle.radius]}
+      scale={[displayRadius, displayRadius, displayRadius]}
       geometry={geometry}
       material={material}
       castShadow

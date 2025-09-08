@@ -27,6 +27,10 @@ export function Viewport() {
   const cameraTarget = useEngineStore((state) => state.cameraTarget);
   const setCameraTarget = useEngineStore((state) => state.setCameraTarget);
   
+  // Global visual settings
+  const backgroundColor = useEngineStore((state) => state.backgroundColor);
+  const gridColor = useEngineStore((state) => state.gridColor);
+  
   const controlsRef = useRef<any>(null);
 
 
@@ -102,16 +106,7 @@ export function Viewport() {
           }
         }}
       >
-        <color attach="background" args={['#1a1a1a']} />
-        <fog attach="fog" args={['#1a1a1a', 100, 500]} />
-        
-        <ambientLight intensity={0.5} />
-        <directionalLight
-          position={[10, 10, 5]}
-          intensity={1}
-          castShadow
-          shadow-mapSize={[2048, 2048]}
-        />
+        <color attach="background" args={[backgroundColor]} />
         
         <OrbitControls
           ref={controlsRef}
@@ -128,10 +123,10 @@ export function Viewport() {
             args={[200, 200]}
             cellSize={1}
             cellThickness={0.5}
-            cellColor="#444444"
+            cellColor={gridColor}
             sectionSize={10}
             sectionThickness={1}
-            sectionColor="#666666"
+            sectionColor={gridColor}
             fadeDistance={100}
             fadeStrength={1}
             infiniteGrid
