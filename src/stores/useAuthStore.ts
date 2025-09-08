@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase, sceneOperations } from '../lib/supabase';
 import type { Scene } from '../lib/supabase';
+import { Particle } from '../core/primitives/Particle';
+import { Constraint } from '../core/primitives/Constraint';
+import { Composite } from '../core/primitives/Composite';
 
 interface AuthState {
   user: User | null;
@@ -53,17 +56,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const engine = engineStore.getState().engine;
     if (!engine) throw new Error('Engine not initialized');
     
+    // Get all state needed for complete serialization
+    const state = engineStore.getState();
+    const dynamicsSystem = state.dynamicsSystem;
+    
     // Serialize the current scene
     const particles = engine.getParticles().map((p: any) => ({
       id: p.id,
       position: { x: p.position.x, y: p.position.y, z: p.position.z },
-      prevPosition: { x: p.prevPosition.x, y: p.prevPosition.y, z: p.prevPosition.z },
+      previousPosition: { x: p.previousPosition.x, y: p.previousPosition.y, z: p.previousPosition.z },
       velocity: { x: p.velocity.x, y: p.velocity.y, z: p.velocity.z },
       mass: p.mass,
       radius: p.radius,
       damping: p.damping,
       color: p.color,
-      fixed: p.fixed
+      fixed: p.fixed,
+      metadata: p.metadata || {},
+      dynamics: dynamicsSystem.getBehaviors(p.id) || []
     }));
     
     const constraints = engine.getConstraints().map((c: any) => ({
@@ -75,14 +84,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     
     const composites = Array.from(engineStore.getState().composites || []).map(([id, composite]: [any, any]) => ({
       id,
-      type: composite.type,
-      particles: composite.particles.map((p: any) => p.id),
-      constraints: composite.constraints.map((c: any) => ({
+      type: composite.metadata?.type || composite.name || 'composite',
+      particles: composite.getParticles ? composite.getParticles().map((p: any) => p.id) : [],
+      constraints: composite.getConstraints ? composite.getConstraints().map((c: any) => ({
         particleA: c.particleA.id,
         particleB: c.particleB.id,
         restLength: c.restLength,
         stiffness: c.stiffness
-      }))
+      })) : []
     }));
     
     const sceneData = {
@@ -97,7 +106,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           airDamping: engine.airDamping,
           groundBounce: engine.groundBounce,
           groundFriction: engine.groundFriction,
-          timeScale: engine.config.timeScale
+          timeScale: engine.config.timeScale,
+          timeStep: engine.config.timeStep,
+          iterations: engine.config.iterations,
+          damping: engine.config.damping
+        },
+        viewSettings: {
+          showGrid: state.showGrid,
+          showGround: state.showGround,
+          showBoundingBoxes: state.showBoundingBoxes,
+          showStats: state.showStats,
+          showObjectProperties: state.showObjectProperties,
+          showEnvironmental: state.showEnvironmental
+        },
+        globalVisualSettings: {
+          particleRadiusMultiplier: state.particleRadiusMultiplier,
+          showParticles: state.showParticles,
+          showTransformGizmo: state.showTransformGizmo,
+          backgroundColor: state.backgroundColor,
+          gridColor: state.gridColor,
+          showFog: state.showFog,
+          fogDensity: state.fogDensity,
+          fogColor: state.fogColor,
+          showSceneLight: state.showSceneLight
         }
       },
       is_public: false
@@ -123,17 +154,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const engine = engineStore.getState().engine;
     if (!engine) throw new Error('Engine not initialized');
     
+    // Get all state needed for complete serialization
+    const state = engineStore.getState();
+    const dynamicsSystem = state.dynamicsSystem;
+    
     // Serialize the current scene
     const particles = engine.getParticles().map((p: any) => ({
       id: p.id,
       position: { x: p.position.x, y: p.position.y, z: p.position.z },
-      prevPosition: { x: p.prevPosition.x, y: p.prevPosition.y, z: p.prevPosition.z },
+      previousPosition: { x: p.previousPosition.x, y: p.previousPosition.y, z: p.previousPosition.z },
       velocity: { x: p.velocity.x, y: p.velocity.y, z: p.velocity.z },
       mass: p.mass,
       radius: p.radius,
       damping: p.damping,
       color: p.color,
-      fixed: p.fixed
+      fixed: p.fixed,
+      metadata: p.metadata || {},
+      dynamics: dynamicsSystem.getBehaviors(p.id) || []
     }));
     
     const constraints = engine.getConstraints().map((c: any) => ({
@@ -145,14 +182,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     
     const composites = Array.from(engineStore.getState().composites || []).map(([id, composite]: [any, any]) => ({
       id,
-      type: composite.type,
-      particles: composite.particles.map((p: any) => p.id),
-      constraints: composite.constraints.map((c: any) => ({
+      type: composite.metadata?.type || composite.name || 'composite',
+      particles: composite.getParticles ? composite.getParticles().map((p: any) => p.id) : [],
+      constraints: composite.getConstraints ? composite.getConstraints().map((c: any) => ({
         particleA: c.particleA.id,
         particleB: c.particleB.id,
         restLength: c.restLength,
         stiffness: c.stiffness
-      }))
+      })) : []
     }));
     
     const updates = {
@@ -165,7 +202,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           airDamping: engine.airDamping,
           groundBounce: engine.groundBounce,
           groundFriction: engine.groundFriction,
-          timeScale: engine.config.timeScale
+          timeScale: engine.config.timeScale,
+          timeStep: engine.config.timeStep,
+          iterations: engine.config.iterations,
+          damping: engine.config.damping
+        },
+        viewSettings: {
+          showGrid: state.showGrid,
+          showGround: state.showGround,
+          showBoundingBoxes: state.showBoundingBoxes,
+          showStats: state.showStats,
+          showObjectProperties: state.showObjectProperties,
+          showEnvironmental: state.showEnvironmental
+        },
+        globalVisualSettings: {
+          particleRadiusMultiplier: state.particleRadiusMultiplier,
+          showParticles: state.showParticles,
+          showTransformGizmo: state.showTransformGizmo,
+          backgroundColor: state.backgroundColor,
+          gridColor: state.gridColor,
+          showFog: state.showFog,
+          fogDensity: state.fogDensity,
+          fogColor: state.fogColor,
+          showSceneLight: state.showSceneLight
         }
       }
     };
@@ -187,7 +246,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // Clear current scene
     engineStore.getState().clearAll();
     
-    const engine = engineStore.getState().engine;
+    const state = engineStore.getState();
+    const engine = state.engine;
+    const dynamicsSystem = state.dynamicsSystem;
     if (!engine) throw new Error('Engine not initialized');
     
     // Restore environment settings
@@ -199,21 +260,76 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     engine.groundFriction = scene.data.environment.groundFriction;
     engine.config.timeScale = scene.data.environment.timeScale;
     
-    // Create particles
+    // Restore additional environment settings if present
+    if (scene.data.environment.timeStep !== undefined) {
+      engine.config.timeStep = scene.data.environment.timeStep;
+    }
+    if (scene.data.environment.iterations !== undefined) {
+      engine.config.iterations = scene.data.environment.iterations;
+    }
+    if (scene.data.environment.damping !== undefined) {
+      engine.config.damping = scene.data.environment.damping;
+    }
+    
+    // Restore view settings if present
+    if (scene.data.viewSettings) {
+      const viewSettings = scene.data.viewSettings;
+      if (viewSettings.showGrid !== undefined) engineStore.setState({ showGrid: viewSettings.showGrid });
+      if (viewSettings.showGround !== undefined) engineStore.setState({ showGround: viewSettings.showGround });
+      if (viewSettings.showBoundingBoxes !== undefined) engineStore.setState({ showBoundingBoxes: viewSettings.showBoundingBoxes });
+      if (viewSettings.showStats !== undefined) engineStore.setState({ showStats: viewSettings.showStats });
+      if (viewSettings.showObjectProperties !== undefined) engineStore.setState({ showObjectProperties: viewSettings.showObjectProperties });
+      if (viewSettings.showEnvironmental !== undefined) engineStore.setState({ showEnvironmental: viewSettings.showEnvironmental });
+    }
+    
+    // Restore global visual settings if present
+    if (scene.data.globalVisualSettings) {
+      const visualSettings = scene.data.globalVisualSettings;
+      if (visualSettings.particleRadiusMultiplier !== undefined) engineStore.setState({ particleRadiusMultiplier: visualSettings.particleRadiusMultiplier });
+      if (visualSettings.showParticles !== undefined) engineStore.setState({ showParticles: visualSettings.showParticles });
+      if (visualSettings.showTransformGizmo !== undefined) engineStore.setState({ showTransformGizmo: visualSettings.showTransformGizmo });
+      if (visualSettings.backgroundColor !== undefined) engineStore.setState({ backgroundColor: visualSettings.backgroundColor });
+      if (visualSettings.gridColor !== undefined) engineStore.setState({ gridColor: visualSettings.gridColor });
+      if (visualSettings.showFog !== undefined) engineStore.setState({ showFog: visualSettings.showFog });
+      if (visualSettings.fogDensity !== undefined) engineStore.setState({ fogDensity: visualSettings.fogDensity });
+      if (visualSettings.fogColor !== undefined) engineStore.setState({ fogColor: visualSettings.fogColor });
+      if (visualSettings.showSceneLight !== undefined) engineStore.setState({ showSceneLight: visualSettings.showSceneLight });
+    }
+    
+    // Create particles first (without adding to engine yet)
     const particleMap = new Map();
+    const particleCreationData: any[] = [];
+    
     scene.data.particles.forEach((pData: any) => {
-      const particle = engineStore.getState().addParticle(
-        pData.position,
-        pData.mass,
-        pData.radius,
-        pData.color
-      );
-      particle.damping = pData.damping;
-      particle.fixed = pData.fixed;
-      particle.velocity.x = pData.velocity.x;
-      particle.velocity.y = pData.velocity.y;
-      particle.velocity.z = pData.velocity.z;
+      particleCreationData.push(pData);
+    });
+    
+    // Create all particles
+    particleCreationData.forEach((pData: any) => {
+      const particle = new Particle({
+        position: pData.position,
+        previousPosition: pData.previousPosition,
+        mass: pData.mass,
+        radius: pData.radius,
+        damping: pData.damping,
+        fixed: pData.fixed,
+        color: pData.color,
+        metadata: pData.metadata || {}
+      });
+      
+      // Restore particle ID
+      particle.id = pData.id;
+      
+      // Add to engine
+      engine.addParticle(particle);
       particleMap.set(pData.id, particle);
+      
+      // Restore dynamic behaviors if present
+      if (pData.dynamics && pData.dynamics.length > 0) {
+        pData.dynamics.forEach((behavior: any) => {
+          dynamicsSystem.addBehavior(particle.id, behavior);
+        });
+      }
     });
     
     // Create constraints
@@ -221,9 +337,52 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const particleA = particleMap.get(cData.particleA);
       const particleB = particleMap.get(cData.particleB);
       if (particleA && particleB) {
-        engineStore.getState().addConstraint(particleA, particleB);
+        const constraint = new Constraint(
+          particleA,
+          particleB,
+          cData.restLength,
+          cData.stiffness
+        );
+        engine.addConstraint(constraint);
       }
     });
+    
+    // Restore composites if present
+    if (scene.data.composites && scene.data.composites.length > 0) {
+      const compositeMap = new Map();
+      scene.data.composites.forEach((compData: any) => {
+        // Create composite object
+        const composite = new Composite({
+          name: compData.type,
+          metadata: { type: compData.type }
+        });
+        composite.id = compData.id;
+        
+        // Add particles to composite
+        compData.particles.forEach((pId: string) => {
+          const particle = particleMap.get(pId);
+          if (particle) {
+            composite.addParticle(particle);
+          }
+        });
+        
+        // Add constraints to composite  
+        const compositeConstraints = engine.getConstraints().filter((c: any) => {
+          const particleAInComposite = compData.particles.includes(c.particleA.id);
+          const particleBInComposite = compData.particles.includes(c.particleB.id);
+          return particleAInComposite && particleBInComposite;
+        });
+        
+        compositeConstraints.forEach((constraint: any) => {
+          composite.addConstraint(constraint);
+        });
+        
+        compositeMap.set(compData.id, composite);
+      });
+      
+      // Update the engine store's composite map
+      engineStore.setState({ composites: compositeMap });
+    }
     
     set({ currentScene: scene });
   },
